@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f2f0ea;
+  --paper-line: #d8d3c4;
+  --carbon: #b9b4a5;
+  --carbon-backdrop: #ada58f;
+  --ink: #22201c;
+  --ink-soft: rgb(34 32 28 / 74%);
+  --ink-faint: rgb(34 32 28 / 66%);
+  --stamp: #3a6b52;
+  --stamp-dark: #2c5340;
+  --errata: #c9463c;
+  --errata-soft: rgb(201 70 60 / 12%);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-line: var(--paper-line);
+  --color-carbon: var(--carbon);
+  --color-carbon-backdrop: var(--carbon-backdrop);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-stamp: var(--stamp);
+  --color-stamp-dark: var(--stamp-dark);
+  --color-errata: var(--errata);
+  --color-errata-soft: var(--errata-soft);
+  --font-ticket: var(--font-courier-prime);
+  --font-sans: var(--font-public-sans);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--stamp);
+  color: var(--paper);
+}
+
+/* alveja o caret e os anéis de foco pra fora do azul padrão do browser */
+input,
+textarea,
+button {
+  caret-color: var(--stamp-dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--stamp-dark);
+  outline-offset: 2px;
+}
+
+/* fibra de papel carbono atrás do talão — duas grades cruzadas pra ler como grão, não como listra */
+.carbon-texture {
+  background-image:
+    repeating-linear-gradient(
+      128deg,
+      rgb(34 32 28 / 11%) 0px,
+      rgb(34 32 28 / 11%) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      38deg,
+      rgb(34 32 28 / 6%) 0px,
+      rgb(34 32 28 / 6%) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+}
+
+/* imperfeição de tinta — mancha e desalinhamento de carimbo batido à mão */
+.ink-imperfect {
+  filter: url(#ink-roughen);
+}
+
+/* título com leve duplo-golpe de tinta, como letterpress fora de registro por meio pixel */
+.ink-title {
+  text-shadow:
+    0.6px 0.4px 0 rgb(34 32 28 / 18%),
+    -0.3px -0.2px 0 rgb(58 107 82 / 12%);
+}
+
+/* eco do traço pautado — segunda linha da via de carbono, visivelmente deslocada */
+.ruled-line-echo {
+  position: absolute;
+  left: 4%;
+  right: 8%;
+  bottom: -4px;
+  height: 1px;
+  background: var(--ink-faint);
+  opacity: 0.8;
+}

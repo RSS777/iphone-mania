@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T00:00:00.000Z",
+  "title": "Design System: iPhone Mania",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#f2f0ea", "tonalRamp": ["#22201c", "#3a372f", "#57544a", "#78746a", "#9a978c", "#bcb9ad", "#dbd8cf", "#f2f0ea"] },
+      "paper-line": { "role": "neutral", "displayName": "Ruled Line", "canonical": "#d8d3c4", "tonalRamp": ["#20201a", "#3f3d34", "#615e51", "#847f6f", "#a7a291", "#c1bcac", "#d8d3c4", "#efece3"] },
+      "carbon": { "role": "neutral", "displayName": "Carbon Fiber", "canonical": "#b9b4a5", "tonalRamp": ["#1e1c17", "#3c392f", "#5d594a", "#807b68", "#a19c88", "#b9b4a5", "#d3cfc3", "#eae8e1"] },
+      "carbon-backdrop": { "role": "neutral", "displayName": "Carbon Backdrop", "canonical": "#ada58f", "tonalRamp": ["#1c1a14", "#38352a", "#585441", "#7a755d", "#9a9479", "#ada58f", "#c8c3b3", "#e4e1d7"] },
+      "ink": { "role": "primary", "displayName": "Ink", "canonical": "#22201c", "tonalRamp": ["#0f0e0c", "#22201c", "#3a372f", "#57544a", "#78746a", "#9a978c", "#bcb9ad", "#dbd8cf"] },
+      "ink-soft": { "role": "primary", "displayName": "Ink (Soft, 74%)", "canonical": "rgb(34 32 28 / 74%)" },
+      "ink-faint": { "role": "primary", "displayName": "Ink (Faint, 66%)", "canonical": "rgb(34 32 28 / 66%)" },
+      "stamp": { "role": "secondary", "displayName": "Stamp Green", "canonical": "#3a6b52", "tonalRamp": ["#0f1e17", "#1e3c2d", "#2c5340", "#3a6b52", "#57896e", "#7ea88d", "#accbb8", "#dbe8e0"] },
+      "stamp-dark": { "role": "secondary", "displayName": "Stamp Green (Dark)", "canonical": "#2c5340", "tonalRamp": ["#0a140f", "#15291f", "#1f3d2f", "#2c5340", "#3f7057", "#649080", "#9cbaab", "#d1e0d8"] },
+      "errata": { "role": "tertiary", "displayName": "Errata Red", "canonical": "#c9463c", "tonalRamp": ["#340f0c", "#5c1c18", "#8a2b24", "#c9463c", "#dd7168", "#e99b93", "#f2c1bc", "#faddda"] },
+      "errata-soft": { "role": "tertiary", "displayName": "Errata Wash", "canonical": "rgb(201 70 60 / 12%)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Ticket Title", "purpose": "The one-per-screen card title (e.g. \"iPhone Mania\"), Courier Prime, with the ink-title double-strike text-shadow." },
+      "label": { "displayName": "Printed Label", "purpose": "Field labels, corner tags, stamp button text, errata lede, footnote copy — anything reading as printed on the ticket." },
+      "body": { "displayName": "Reading Body", "purpose": "Helper sentences, informational paragraphs, error message body — Public Sans, never monospace." }
+    },
+    "shadows": [
+      { "name": "ticket-rest", "value": "0 1px 0 var(--paper-line), 0 18px 36px -24px rgb(34 32 28 / 45%)", "purpose": "The ticket card's only shadow — reads as resting on the carbon backdrop, not floating." },
+      { "name": "torn-edge-drop", "value": "drop-shadow(0 2px 2px rgb(34 32 28 / 22%))", "purpose": "Cast by the torn-edge SVG teeth onto the surface below." },
+      { "name": "corner-tag-lip", "value": "0 1px 0 var(--paper-line)", "purpose": "One-pixel paper-lip shadow under the stapled corner tag." }
+    ],
+    "motion": [
+      { "name": "stamp-press", "value": "transform 150ms ease-out, scale(0.94) on :active", "purpose": "Stamp button press feedback." },
+      { "name": "stamp-rotation-settle", "value": "rotate(-2deg) idle to rotate(0.5deg) pending", "purpose": "Stamp button straightens slightly while a submit is pending." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Stamp Button",
+      "kind": "button",
+      "refersTo": "button-stamp",
+      "description": "Primary submit control styled as a hand-stamped ink mark; the system's signature interaction.",
+      "html": "<button type=\"submit\" class=\"ds-stamp-btn\"><span class=\"ds-stamp-ring-outer\"></span><span class=\"ds-stamp-ring-inner\"></span><span class=\"ds-stamp-bleed\"></span><span class=\"ds-stamp-label\">ENTRAR</span></button>",
+      "css": ".ds-stamp-btn { position: relative; width: 100%; background: transparent; border: none; padding: 10px; cursor: pointer; transform: rotate(-2deg); transition: transform 150ms ease-out; } .ds-stamp-btn:active { transform: rotate(0.5deg) scale(0.94); } .ds-stamp-ring-outer { position: absolute; inset: 0; border: 2px solid rgba(58,107,82,0.7); border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; transform: rotate(1.5deg); pointer-events: none; } .ds-stamp-ring-inner { position: absolute; inset: 5px; border: 3px solid #3a6b52; border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px; pointer-events: none; } .ds-stamp-bleed { position: absolute; inset: -4px; opacity: 0.14; background: radial-gradient(ellipse 60% 45% at 38% 65%, #3a6b52 0%, transparent 70%); pointer-events: none; } .ds-stamp-label { position: relative; font-family: 'Courier Prime', monospace; font-size: 1.125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #3a6b52; }"
+    },
+    {
+      "name": "Ticket Field",
+      "kind": "input",
+      "refersTo": "field-ticket",
+      "description": "Ruled-line text input with a carbon-copy ghost line, styled as a fill-in line on a work order.",
+      "html": "<label class=\"ds-ticket-field\"><span class=\"ds-ticket-field-label\">Email</span><span class=\"ds-ticket-field-wrap\"><input class=\"ds-ticket-field-input\" type=\"email\" placeholder=\"\" /><span class=\"ds-ticket-field-echo\"></span></span></label>",
+      "css": ".ds-ticket-field { display: block; } .ds-ticket-field-label { font-family: 'Courier Prime', monospace; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: rgb(34 32 28 / 74%); } .ds-ticket-field-wrap { position: relative; display: block; margin-top: 8px; } .ds-ticket-field-input { width: 100%; border: none; border-bottom: 2px solid #d8d3c4; background: transparent; padding: 8px 0; font-size: 1.125rem; color: #22201c; font-family: 'Public Sans', sans-serif; } .ds-ticket-field-input::placeholder { color: rgb(34 32 28 / 66%); } .ds-ticket-field-input:focus-visible { outline: 2px solid #2c5340; outline-offset: 2px; border-bottom-color: #2c5340; } .ds-ticket-field-echo { position: absolute; left: 4%; right: 8%; bottom: -4px; height: 1px; background: rgb(34 32 28 / 66%); opacity: 0.8; }"
+    },
+    {
+      "name": "Errata Note",
+      "kind": "custom",
+      "description": "Error/correction callout styled as a stamped errata note; reserved strictly for real error states.",
+      "html": "<div role=\"alert\" class=\"ds-errata-note\"><span class=\"ds-errata-lede\">Errata — </span>Email ou senha incorretos.</div>",
+      "css": ".ds-errata-note { transform: rotate(-1deg); border: 2px dashed #c9463c; background: rgb(201 70 60 / 12%); padding: 12px 16px; font-family: 'Courier Prime', monospace; font-size: 0.875rem; color: #c9463c; } .ds-errata-lede { font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; }"
+    },
+    {
+      "name": "Corner Tag",
+      "kind": "chip",
+      "description": "Stapled-paper status/ID label pinned to a ticket's top-right corner; the system's anti-kicker convention.",
+      "html": "<span class=\"ds-corner-tag\">OS Nº 002</span>",
+      "css": ".ds-corner-tag { position: absolute; top: -12px; right: 20px; transform: rotate(3deg); border: 1px dashed #d8d3c4; background: #f2f0ea; padding: 4px 8px; font-family: 'Courier Prime', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: rgb(34 32 28 / 66%); box-shadow: 0 1px 0 #d8d3c4; }"
+    },
+    {
+      "name": "Ticket Card",
+      "kind": "card",
+      "refersTo": "card-ticket",
+      "description": "The system's sole container: a torn-paper ticket pinned under a metal clip, carbon-textured, with a corner tag and header.",
+      "html": "<div class=\"ds-ticket-clip\"></div><svg class=\"ds-ticket-torn-top\" viewBox=\"0 0 240 14\" preserveAspectRatio=\"none\"><path d=\"M0,0 L0,6 L8,2 L16,9 L24,3 L32,10 L40,2 L48,8 L56,1 L64,9 L72,4 L80,11 L88,2 L96,7 L104,1 L112,10 L120,3 L128,9 L136,2 L144,8 L152,1 L160,9 L168,4 L176,11 L184,2 L192,7 L200,1 L208,10 L216,3 L224,9 L232,2 L240,6 L240,0 Z\" fill=\"#f2f0ea\"/></svg><div class=\"ds-ticket-card\"><span class=\"ds-corner-tag\">OS Nº 002</span><header class=\"ds-ticket-header\"><h1 class=\"ds-ticket-title\">iPhone Mania</h1><p class=\"ds-ticket-sub\">Entre pra abrir o turno.</p></header></div>",
+      "css": ".ds-ticket-clip { width: 56px; height: 34px; margin: 0 auto -14px; background: linear-gradient(#eef0f1, #9aa1a6 40%, #c7cbce 55%, #6c7378); clip-path: polygon(10% 30%, 90% 30%, 100% 60%, 85% 100%, 15% 100%, 0 60%); } .ds-ticket-torn-top { display: block; width: 100%; height: 14px; filter: drop-shadow(0 2px 2px rgba(34,32,28,0.22)); } .ds-ticket-card { position: relative; background: #f2f0ea; padding: 24px 28px 36px; box-shadow: 0 1px 0 #d8d3c4, 0 18px 36px -24px rgba(34,32,28,0.45); } .ds-ticket-header { margin-bottom: 24px; border-bottom: 1px dashed #d8d3c4; padding-bottom: 20px; } .ds-ticket-title { font-family: 'Courier Prime', monospace; font-size: 1.875rem; font-weight: 700; color: #22201c; text-shadow: 0.6px 0.4px 0 rgba(34,32,28,0.18), -0.3px -0.2px 0 rgba(58,107,82,0.12); } .ds-ticket-sub { margin-top: 4px; font-family: 'Public Sans', sans-serif; font-size: 0.875rem; color: rgb(34 32 28 / 74%); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ordem de Serviço de Bancada (Repair-Bench Work Order)",
+    "overview": "iPhone Mania is a private two-partner tool, used mid-transaction on a phone in daylight, that wants to feel like the paper work-order ticket a repair bench hands you, not a generic SaaS auth card. Every surface is a single talao (ticket) torn from a carbon-paper pad: a paper card with hand-torn top/bottom edges, pinned under a metal clipboard clip, carrying a stapled-looking corner tag, sitting on a warm carbon-paper backdrop. The world is built from paper, ink, and one sparingly-used stamp of institutional green; it has confirmed no dark mode and no decorative iconography — the only genuinely metallic, non-paper object in the whole world is the clip.\n\nConfirmed visual rejection: no generic rounded-corner SaaS card, no drop-shadow-heavy \"modern dashboard\" chrome, no blue focus rings or link colors (focus and caret are re-themed to stamp-green so nothing breaks the paper/ink/stamp/errata palette).",
+    "keyCharacteristics": [
+      "Paper-and-carbon material world: torn edges, ruled lines, carbon-fiber cross-hatch texture, a single metal clip",
+      "One monospace \"ticket voice\" (Courier Prime) reserved for titles, labels, and the stamp button; Public Sans carries all reading body copy",
+      "A hand-stamped button as the system's signature interactive gesture, deliberately imperfect (rotated, double-ringed, ink-bled)",
+      "Errata-red is reserved strictly for error/correction states — never decorative",
+      "Corner tags replace kickers/eyebrows: they read as a stapled paper label pinned to the ticket's corner, not as inline text sitting above a title"
+    ],
+    "rules": [
+      { "name": "The Errata-Only Rule", "body": "Errata-red never appears outside an actual error, correction, or destructive-action hint. If a screen has no error, it has no red.", "section": "colors" },
+      { "name": "The One Stamp Rule", "body": "Stamp-green is the only accent color in the system, marking exactly one primary action's identity plus focus/active state.", "section": "colors" },
+      { "name": "The Ticket-Voice Rule", "body": "Courier Prime is used only for things that are printed on the form (titles, labels, tags, the stamp, footnotes) — never for paragraphs of prose.", "section": "typography" },
+      { "name": "The Light-Only Rule", "body": "The system commits to a single light paper mode with no dark-mode variant, because iPhones are evaluated outdoors in daylight during purchase.", "section": "layout" },
+      { "name": "The Material-Not-Elevation Rule", "body": "Depth is conveyed by paper materials (torn edges, the metal clip, carbon texture, ruled lines) before it is conveyed by shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep errata-red confined to actual error/correction/destructive states (ErrataNote, sign-out hover) — never as decoration or emphasis.",
+      "Do use the torn-edge silhouette (TornEdge) for the top and bottom of any full ticket-style card; don't substitute a rounded corner there.",
+      "Do route all focus/caret/selection styling through --stamp/--stamp-dark — never let default browser blue reappear.",
+      "Do reserve Courier Prime for \"printed on the ticket\" elements (titles, labels, tags, the stamp, footnotes) and keep reading prose in Public Sans.",
+      "Do treat the corner tag as the system's status/ID marker — a small dashed-border stapled label pinned at the card's top-right corner, not inline text stacked above the title.",
+      "Do keep the world light-only; the paper ground is a deliberate outdoor-daylight legibility choice, not an unfinished dark-mode gap."
+    ],
+    "donts": [
+      "Don't add drop-shadow-heavy floating-card chrome or hover-lift shadows — depth comes from paper materials, not shadow escalation.",
+      "Don't introduce a second accent color alongside stamp-green; the palette's restraint is load-bearing to the \"real work order\" read.",
+      "Don't apply rounded corners to card containers; square corners plus the torn-edge tooth pattern are the system's only silhouette outside the one hand-stamped button.",
+      "Don't reuse the stamp button's organic compound-radius/turbulence-filter treatment on other components; it is a one-time signature reserved for the primary submit action."
+    ]
+  }
+}
