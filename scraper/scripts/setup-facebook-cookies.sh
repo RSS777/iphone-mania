@@ -221,16 +221,32 @@ note "Se o Cookie-Editor perguntar o formato, escolha JSON (é o que o"
 note "Playwright/Scrapling espera: uma lista de objetos com name/value/domain)."
 pause "Copiou? Aperte Enter e cole no próximo passo."
 
-# ── Stage 4: colar e validar ────────────────────────────────────────────────
-stage "Colar e validar o JSON"
-say "Cole o conteúdo copiado numa linha só (Ctrl+V) e aperte Enter."
-ask_secret FACEBOOK_COOKIES_JSON "Cole o JSON dos cookies:"
+# ── Stage 4: colar num arquivo e validar ───────────────────────────────────
+# Colar direto no terminal (modo oculto) trava em alguns terminais do Windows
+# (PowerShell/cmd sem suporte a Ctrl+V nesse modo) — por isso pede pra colar
+# num arquivo de texto comum, onde colar sempre funciona.
+stage "Colar num arquivo e validar"
+COOKIES_TMP_FILE="${TMPDIR:-/tmp}/fb-cookies-$$.json"
+say "Vamos abrir o Bloco de Notas. Cole o JSON lá (Ctrl+V), salve e feche."
+if command -v notepad.exe >/dev/null 2>&1; then
+  : > "$COOKIES_TMP_FILE"
+  notepad.exe "$(cygpath -w "$COOKIES_TMP_FILE" 2>/dev/null || echo "$COOKIES_TMP_FILE")"
+else
+  say "Não achei o Bloco de Notas automaticamente."
+  say "Abra qualquer editor de texto, cole o JSON, e salve como:"
+  say "  $COOKIES_TMP_FILE"
+  pause "Salvou? Aperte Enter pra continuar."
+fi
+
 PYTHON_BIN=$(command -v python3 || command -v python || true)
-if [[ -z "$PYTHON_BIN" ]] || ! printf '%s' "$FACEBOOK_COOKIES_JSON" | "$PYTHON_BIN" -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d, list) and len(d) > 0' 2>/dev/null; then
-  warn "Isso não parece uma lista JSON válida. Confira se copiou o texto certo"
+if [[ ! -s "$COOKIES_TMP_FILE" ]] || [[ -z "$PYTHON_BIN" ]] || ! "$PYTHON_BIN" -c 'import json,sys; d=json.load(open(sys.argv[1], encoding="utf-8")); assert isinstance(d, list) and len(d) > 0' "$COOKIES_TMP_FILE" 2>/dev/null; then
+  warn "Isso não parece uma lista JSON válida. Confira se colou o texto certo"
   warn "(deve começar com '[' e terminar com ']') e rode o script de novo."
+  rm -f "$COOKIES_TMP_FILE"
   exit 1
 fi
+FACEBOOK_COOKIES_JSON=$("$PYTHON_BIN" -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1], encoding="utf-8"))))' "$COOKIES_TMP_FILE")
+rm -f "$COOKIES_TMP_FILE"
 say "JSON válido."
 
 # ── Stage 5: gravar localmente e no GitHub ─────────────────────────────────
