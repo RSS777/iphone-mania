@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
 import { TornEdge } from "@/components/torn-edge";
@@ -25,10 +26,12 @@ export default async function HomePage() {
             <p className="mt-1 text-sm text-ink-soft">{user?.email}</p>
           </header>
 
-          <p className="text-sm text-ink-soft">
-            Autenticação e sessão funcionando. As abas de estoque, vendidos, caixa, lucro e metas
-            entram nos próximos tickets.
-          </p>
+          <Link
+            href="/estoque"
+            className="block border-2 border-dashed border-paper-line py-4 text-center font-ticket text-sm font-bold uppercase tracking-[0.18em] text-ink-soft transition-colors hover:border-stamp-dark hover:text-stamp-dark"
+          >
+            Em Avaliação / Estoque
+          </Link>
 
           <form action={signOut} className="mt-8">
             <button
