@@ -39,6 +39,12 @@ export default async function HomePage() {
             >
               Fluxo de Caixa
             </Link>
+            <Link
+              href="/vendidos"
+              className="block border-2 border-dashed border-paper-line py-4 text-center font-ticket text-sm font-bold uppercase tracking-[0.18em] text-ink-soft transition-colors hover:border-stamp-dark hover:text-stamp-dark"
+            >
+              Vendidos
+            </Link>
           </div>
 
           <form action={signOut} className="mt-8">
