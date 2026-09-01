@@ -3,7 +3,7 @@
 export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="pt-BR">
-      <body style={{ background: "#ada58f", fontFamily: "system-ui, sans-serif" }}>
+      <body style={{ background: "#0a0e17", fontFamily: "system-ui, sans-serif" }}>
         <main
           style={{
             minHeight: "100vh",
@@ -15,11 +15,19 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
             textAlign: "center",
           }}
         >
-          <div style={{ maxWidth: "24rem", background: "#f2f0ea", padding: "28px", border: "2px dashed #c9463c" }}>
-            <h1 style={{ fontWeight: 700, fontSize: "1.5rem", color: "#22201c", margin: 0 }}>
+          <div
+            style={{
+              maxWidth: "24rem",
+              background: "#131a2a",
+              padding: "28px",
+              borderRadius: "16px",
+              border: "1px solid #222c40",
+            }}
+          >
+            <h1 style={{ fontWeight: 700, fontSize: "1.5rem", color: "#f3f5f9", margin: 0 }}>
               Sem conexão ou erro inesperado
             </h1>
-            <p style={{ marginTop: "12px", color: "#c9463c", fontSize: "0.875rem" }}>
+            <p style={{ marginTop: "12px", color: "#ff6b7a", fontSize: "0.875rem" }}>
               Não deu pra carregar o app. Verifique sua internet e tente de novo.
             </p>
             <button
@@ -28,9 +36,8 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
               style={{
                 marginTop: "20px",
                 fontWeight: 700,
-                textTransform: "uppercase",
                 fontSize: "0.875rem",
-                color: "#2c5340",
+                color: "#3ddc97",
                 background: "none",
                 border: "none",
                 textDecoration: "underline",

@@ -1,0 +1,30 @@
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { RecorrenteForm } from "../recorrente-form";
+import type { CategoriaSaida } from "@/lib/caixa";
+
+export default async function NovaRecorrentePage() {
+  const supabase = await createClient();
+  const { data: categorias } = await supabase
+    .from("categorias_saida")
+    .select("*")
+    .order("nome")
+    .returns<CategoriaSaida[]>();
+
+  return (
+    <div style={{ "--tint": "var(--nb-caixa)" } as React.CSSProperties} className="font-nb">
+      <header className="nb-navbar-blur sticky top-0 z-30 px-4 pb-3 pt-4">
+        <Link href="/caixa/recorrentes" className="text-[15px] font-semibold" style={{ color: "var(--nb-caixa)" }}>
+          ‹ Recorrentes
+        </Link>
+        <h1 className="mt-1 text-[26px] font-bold tracking-tight text-[var(--nb-ink)] [font-family:var(--font-display)]">
+          Nova recorrência
+        </h1>
+      </header>
+
+      <main className="px-4 pb-6">
+        <RecorrenteForm categorias={categorias ?? []} />
+      </main>
+    </div>
+  );
+}

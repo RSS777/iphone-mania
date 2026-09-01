@@ -3,9 +3,9 @@
 import { useActionState, useEffect, useState } from "react";
 import { updatePassword, type ResetPasswordState } from "./actions";
 import { createClient } from "@/lib/supabase/client";
-import { TicketField } from "@/components/ticket-field";
-import { StampButton } from "@/components/stamp-button";
-import { ErrataNote } from "@/components/errata-note";
+import { NBTextRow } from "@/components/nb/text-row";
+import { NBButton } from "@/components/nb/button";
+import { NBErrorBanner } from "@/components/nb/error-banner";
 
 const initialState: ResetPasswordState = { error: null };
 
@@ -42,29 +42,22 @@ export function ResetPasswordForm() {
   }, []);
 
   if (status === "checking") {
-    return <p className="text-sm text-ink-soft">Conferindo o link…</p>;
+    return <p className="text-[14px] text-[var(--nb-ink-secondary)]">Conferindo o link…</p>;
   }
 
   if (status === "invalid") {
     return (
-      <ErrataNote>
+      <NBErrorBanner>
         Esse link de recuperação já foi usado ou expirou. Peça um novo em &ldquo;Esqueci minha
         senha&rdquo; na tela de login.
-      </ErrataNote>
+      </NBErrorBanner>
     );
   }
 
   return (
-    <form action={action} noValidate className="flex flex-col gap-6">
-      <TicketField
-        id="password"
-        name="password"
-        type="password"
-        label="Nova senha"
-        autoComplete="new-password"
-        required
-      />
-      <TicketField
+    <form action={action} noValidate className="flex flex-col gap-3">
+      <NBTextRow id="password" name="password" type="password" label="Nova senha" autoComplete="new-password" required />
+      <NBTextRow
         id="confirmation"
         name="confirmation"
         type="password"
@@ -73,9 +66,11 @@ export function ResetPasswordForm() {
         required
       />
 
-      {state.error ? <ErrataNote>{state.error}</ErrataNote> : null}
+      {state.error ? <NBErrorBanner>{state.error}</NBErrorBanner> : null}
 
-      <StampButton idleLabel="Trocar senha" pendingLabel="Carimbando…" />
+      <NBButton type="submit" pendingLabel="Trocando…" className="mt-1">
+        Trocar senha
+      </NBButton>
     </form>
   );
 }

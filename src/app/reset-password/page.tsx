@@ -1,27 +1,30 @@
-import { TornEdge } from "@/components/torn-edge";
-import { CornerTag } from "@/components/corner-tag";
-import { MetalClip } from "@/components/metal-clip";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export default function ResetPasswordPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-carbon-backdrop px-6 py-12">
-      <div className="relative w-full max-w-sm">
-        <MetalClip className="absolute -top-4 left-1/2 z-10 h-9 w-14 -translate-x-1/2" />
-        <TornEdge className="h-3.5 w-full text-paper" />
-
-        <div className="carbon-texture relative bg-paper px-7 pb-9 pt-6 shadow-[0_1px_0_var(--paper-line),0_18px_36px_-24px_rgb(34_32_28_/_45%)]">
-          <CornerTag>Correção</CornerTag>
-          <header className="mb-6 border-b border-dashed border-paper-line pb-5">
-            <h1 className="ink-title font-ticket text-3xl font-bold tracking-tight text-ink">
-              Nova senha
-            </h1>
-          </header>
-
-          <ResetPasswordForm />
+    <main
+      className="font-nb flex min-h-screen flex-col items-center justify-center bg-[var(--nb-bg)] px-6 py-12"
+      style={{ "--tint": "var(--nb-estoque)" } as React.CSSProperties}
+    >
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center gap-3 text-center">
+          <div
+            className="flex h-16 w-16 items-center justify-center rounded-[20px] text-[24px] font-extrabold [font-family:var(--font-display)]"
+            style={{
+              background: "linear-gradient(135deg, var(--nb-estoque), #23c9c9)",
+              color: "var(--nb-accent-ink)",
+              boxShadow: "0 12px 28px -10px color-mix(in srgb, var(--nb-estoque) 55%, transparent)",
+            }}
+            aria-hidden="true"
+          >
+            iM
+          </div>
+          <h1 className="text-[24px] font-bold tracking-tight text-[var(--nb-ink)] [font-family:var(--font-display)]">
+            Nova senha
+          </h1>
         </div>
 
-        <TornEdge flip className="h-3.5 w-full text-paper" />
+        <ResetPasswordForm />
       </div>
     </main>
   );

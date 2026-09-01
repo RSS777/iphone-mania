@@ -12,6 +12,24 @@
   --stamp-dark: #2c5340;
   --errata: #c9463c;
   --errata-soft: rgb(201 70 60 / 12%);
+
+  /* --- mundo novo: Neobank (em construção lado a lado com o mundo antigo) --- */
+  --nb-bg: #0a0e17;
+  --nb-surface: #131a2a;
+  --nb-surface-2: #1b2436;
+  --nb-ink: #f3f5f9;
+  --nb-ink-secondary: #8b93a7;
+  --nb-ink-tertiary: #5b6478;
+  --nb-separator: #222c40;
+  --nb-accent-ink: #06251a;
+
+  --nb-estoque: #3ddc97; /* menta — também a cor de marca (login, ações primárias) */
+  --nb-caixa: #6c8cff; /* índigo */
+  --nb-vendidos: #b38cff; /* violeta */
+  --nb-lucro: #ffb84d; /* âmbar */
+  --nb-metas: #ff6b9d; /* rosa */
+  --nb-garimpo: #22d3ee; /* ciano */
+  --nb-danger: #ff6b7a;
 }
 
 @theme inline {
@@ -28,36 +46,49 @@
   --color-errata-soft: var(--errata-soft);
   --font-ticket: var(--font-courier-prime);
   --font-sans: var(--font-public-sans);
+
+  --color-nb-bg: var(--nb-bg);
+  --color-nb-surface: var(--nb-surface);
+  --color-nb-surface-2: var(--nb-surface-2);
+  --color-nb-ink: var(--nb-ink);
+  --color-nb-ink-secondary: var(--nb-ink-secondary);
+  --color-nb-ink-tertiary: var(--nb-ink-tertiary);
+  --color-nb-separator: var(--nb-separator);
+  --color-nb-estoque: var(--nb-estoque);
+  --color-nb-caixa: var(--nb-caixa);
+  --color-nb-vendidos: var(--nb-vendidos);
+  --color-nb-lucro: var(--nb-lucro);
+  --color-nb-metas: var(--nb-metas);
+  --color-nb-garimpo: var(--nb-garimpo);
+  --color-nb-danger: var(--nb-danger);
+  --font-display: var(--font-sora);
+  --font-nb: var(--font-manrope);
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
-  color-scheme: light;
+  background: var(--nb-bg);
+  color: var(--nb-ink);
+  color-scheme: dark;
 }
 
 input[type="date"] {
-  accent-color: var(--stamp);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(14%) sepia(9%) saturate(560%) hue-rotate(357deg) brightness(94%) contrast(89%);
+  accent-color: var(--nb-estoque);
 }
 
 ::selection {
-  background: var(--stamp);
-  color: var(--paper);
+  background: var(--nb-estoque);
+  color: var(--nb-accent-ink);
 }
 
 /* alveja o caret e os anéis de foco pra fora do azul padrão do browser */
 input,
 textarea,
 button {
-  caret-color: var(--stamp-dark);
+  caret-color: var(--nb-estoque);
 }
 
 :focus-visible {
-  outline: 2px solid var(--stamp-dark);
+  outline: 2px solid var(--nb-estoque);
   outline-offset: 2px;
 }
 
@@ -101,4 +132,26 @@ button {
   height: 1px;
   background: var(--ink-faint);
   opacity: 0.8;
+}
+
+/* --- utilitários do mundo Neobank --- */
+.nb-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nb-tabbar-blur {
+  background: rgb(19 26 42 / 86%);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* Botão flutuante fixo na tela, com respiro acima da barra de abas */
+.nb-fab {
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+}
+
+.nb-navbar-blur {
+  background: rgb(10 14 23 / 88%);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
