@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Public_Sans, Courier_Prime } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { QuickExpenseButton } from "@/components/quick-expense-button";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const publicSans = Public_Sans({
@@ -18,6 +19,19 @@ const courierPrime = Courier_Prime({
 export const metadata: Metadata = {
   title: "iPhone Mania",
   description: "Compra, avaliação e venda de iPhones — caixa, custos e lucro num só lugar.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "iPhone Mania",
+  },
 };
 
 export const viewport: Viewport = {
@@ -78,6 +92,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </svg>
         {children}
         {user ? <QuickExpenseButton categorias={categorias} /> : null}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
