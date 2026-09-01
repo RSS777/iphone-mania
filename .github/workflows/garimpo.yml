@@ -20,4 +20,3 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          DEBUG_GARIMPO: ${{ secrets.DEBUG_GARIMPO }}

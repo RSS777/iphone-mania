@@ -32,22 +32,6 @@ for (const config of configs) {
   }
 
   try {
-    if (process.env.DEBUG_GARIMPO) {
-      const url = `https://www.olx.com.br/celulares/celulares-e-smartphones?q=${encodeURIComponent(config.termos_busca)}`;
-      const res = await fetch(url, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-          "Accept-Language": "pt-BR,pt;q=0.9",
-        },
-      });
-      console.log("DEBUG status:", res.status);
-      console.log("DEBUG headers:", JSON.stringify([...res.headers.entries()]));
-      const body = await res.text();
-      console.log("DEBUG body (primeiros 500):", body.slice(0, 500));
-    }
-
     const resultados = await buscarOlx(config);
     console.log(`[${config.nome}] ${resultados.length} anúncios encontrados`);
 
