@@ -2,7 +2,11 @@ name: Garimpo de iPhones
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "*/20 * * * *" # OLX, toda rodada
+    - cron: "0 */3 * * *"  # Facebook Marketplace, só a cada 3h — sessão dele
+                            # cai com frequência quando usada demais de IPs
+                            # trocando toda hora (padrão de sequestro de sessão
+                            # aos olhos do Facebook); rodar menos reduz o risco.
   workflow_dispatch: {}
 
 jobs:
@@ -23,3 +27,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           FACEBOOK_COOKIES_JSON: ${{ secrets.FACEBOOK_COOKIES_JSON }}
+          INCLUIR_FACEBOOK: ${{ github.event_name != 'schedule' || github.event.schedule == '0 */3 * * *' }}

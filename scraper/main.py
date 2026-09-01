@@ -6,10 +6,27 @@ from supabase import create_client
 from buscar_olx import buscar_olx
 from buscar_facebook import buscar_facebook_marketplace
 
-BUSCADORES = {
-    "olx": buscar_olx,
-    "facebook": buscar_facebook_marketplace,
-}
+# O Facebook derruba a sessão com frequência quando ela é usada de IPs
+# trocando toda hora (o GitHub Actions troca de IP a cada execução) — padrão
+# que parece sequestro de sessão aos olhos do Facebook. Rodar com menos
+# frequência reduz o risco. Controlado pelo workflow via INCLUIR_FACEBOOK.
+INCLUIR_FACEBOOK = os.environ.get("INCLUIR_FACEBOOK", "true").strip().lower() == "true"
+
+BUSCADORES = {"olx": buscar_olx}
+if INCLUIR_FACEBOOK:
+    BUSCADORES["facebook"] = buscar_facebook_marketplace
+
+
+def _erros_por_fonte(texto_erro: str | None) -> dict[str, str]:
+    """'olx: X | facebook: Y' -> {'olx': 'X', 'facebook': 'Y'}"""
+    if not texto_erro:
+        return {}
+    partes: dict[str, str] = {}
+    for trecho in texto_erro.split(" | "):
+        fonte, _, msg = trecho.partition(": ")
+        if fonte:
+            partes[fonte.strip()] = msg.strip()
+    return partes
 
 
 def main():
@@ -18,6 +35,9 @@ def main():
     if not url or not service_key:
         print("Faltam SUPABASE_URL e/ou SUPABASE_SERVICE_KEY no ambiente.")
         sys.exit(1)
+
+    if not INCLUIR_FACEBOOK:
+        print("Rodada sem Facebook (só roda a cada 3h, pra reduzir risco de derrubar a sessão).")
 
     supabase = create_client(url, service_key)
 
@@ -31,14 +51,16 @@ def main():
     total_erros = 0
 
     for config in configs:
-        erros_da_config = []
-        total_anuncios = 0
+        # Começa com os erros que já tinha (de fontes que não vão rodar
+        # nessa rodada, tipo o Facebook fora do horário dele) — só é
+        # sobrescrito/limpo pra fonte que de fato roda agora.
+        erros_atuais = _erros_por_fonte(config.get("ultimo_erro"))
 
         for fonte, buscar in BUSCADORES.items():
             try:
                 resultados = buscar(config)
-                total_anuncios += len(resultados)
                 print(f'[{config["nome"]}] {fonte}: {len(resultados)} anúncios encontrados')
+                erros_atuais.pop(fonte, None)
 
                 for anuncio in resultados:
                     resp = supabase.rpc(
@@ -57,18 +79,16 @@ def main():
                     ).execute()
                     if getattr(resp, "error", None):
                         print(f'[{config["nome"]}] {fonte}: erro ao processar anúncio {anuncio["id"]}: {resp.error}')
-                        erros_da_config.append(f"{fonte}: erro ao gravar anúncio")
+                        erros_atuais[fonte] = "erro ao gravar anúncio"
             except Exception as err:  # noqa: BLE001 — uma fonte falhando não pode derrubar a outra
                 print(f'[{config["nome"]}] {fonte} falhou: {err}')
-                erros_da_config.append(f"{fonte}: {err}")
+                erros_atuais[fonte] = str(err)
 
-        if erros_da_config:
-            total_erros += len(erros_da_config)
+        if erros_atuais:
+            total_erros += len(erros_atuais)
+            texto = " | ".join(f"{f}: {m}" for f, m in erros_atuais.items())
             supabase.table("scraping_configs").update(
-                {
-                    "ultimo_erro": " | ".join(erros_da_config),
-                    "ultimo_erro_em": datetime.now(timezone.utc).isoformat(),
-                }
+                {"ultimo_erro": texto, "ultimo_erro_em": datetime.now(timezone.utc).isoformat()}
             ).eq("id", config["id"]).execute()
         elif config.get("ultimo_erro"):
             supabase.table("scraping_configs").update({"ultimo_erro": None, "ultimo_erro_em": None}).eq(
