@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AnunciosList } from "./anuncios-list";
-import type { ScrapingAnuncio, ScrapingConfig } from "@/lib/garimpo";
+import { sessaoFacebookExpirou, type ScrapingAnuncio, type ScrapingConfig } from "@/lib/garimpo";
 
 export default async function GarimpoPage() {
   const supabase = await createClient();
@@ -29,6 +29,35 @@ export default async function GarimpoPage() {
       </header>
 
       <main className="px-4 pb-6">
+        {(configs ?? [])
+          .filter((c) => c.ativo && c.ultimo_erro)
+          .map((config) => (
+            <div
+              key={config.id}
+              role="alert"
+              className="mb-3 rounded-2xl border px-4 py-3 text-[13.5px] leading-snug"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--nb-danger) 12%, transparent)",
+                borderColor: "color-mix(in srgb, var(--nb-danger) 30%, transparent)",
+                color: "var(--nb-danger)",
+              }}
+            >
+              {sessaoFacebookExpirou(config) ? (
+                <>
+                  <strong>{config.nome}</strong> parou — a sessão do Facebook expirou. Rode{" "}
+                  <code className="[font-variant-numeric:tabular-nums]">
+                    bash scraper/scripts/setup-facebook-cookies.sh
+                  </code>{" "}
+                  de novo pra reconectar.
+                </>
+              ) : (
+                <>
+                  <strong>{config.nome}</strong> parou de funcionar: {config.ultimo_erro}
+                </>
+              )}
+            </div>
+          ))}
+
         <AnunciosList anunciosIniciais={anuncios ?? []} configs={configs ?? []} />
       </main>
     </div>

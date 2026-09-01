@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime, timezone
 
 from supabase import create_client
 from buscar_olx import buscar_olx
@@ -64,9 +65,18 @@ def main():
                 if getattr(resp, "error", None):
                     print(f'[{config["nome"]}] erro ao processar anúncio {anuncio["id"]}: {resp.error}')
                     total_erros += 1
+
+            # sucesso — limpa qualquer erro anterior registrado pra essa busca
+            if config.get("ultimo_erro"):
+                supabase.table("scraping_configs").update({"ultimo_erro": None, "ultimo_erro_em": None}).eq(
+                    "id", config["id"]
+                ).execute()
         except Exception as err:  # noqa: BLE001 — precisa seguir pras próximas configs mesmo se uma falhar
             print(f'[{config["nome"]}] falhou: {err}')
             total_erros += 1
+            supabase.table("scraping_configs").update(
+                {"ultimo_erro": str(err), "ultimo_erro_em": datetime.now(timezone.utc).isoformat()}
+            ).eq("id", config["id"]).execute()
 
     if total_erros > 0:
         print(f"Finalizado com {total_erros} erro(s).")
