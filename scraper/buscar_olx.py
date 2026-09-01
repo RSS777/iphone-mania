@@ -10,6 +10,7 @@ tanto local quanto no runner do GitHub Actions.
 from urllib.parse import quote
 from scrapling.fetchers import StealthyFetcher
 from util_localizacao import bate_cidade
+from util_data import olx_dentro_do_prazo
 
 
 def _texto(selector_list):
@@ -46,6 +47,7 @@ def buscar_olx(config: dict) -> list[dict]:
         preco = int(digitos) if digitos else None
 
         localizacao = _texto(card.css(".olx-adcard__location"))
+        data_texto = _texto(card.css(".olx-adcard__date"))
 
         img_el = card.css(".olx-adcard__media img")
         imagem = img_el[0].attrib.get("src") if img_el else None
@@ -56,6 +58,8 @@ def buscar_olx(config: dict) -> list[dict]:
         if preco < preco_min or preco > preco_max:
             continue
         if not bate_cidade(localizacao, cidades):
+            continue
+        if not olx_dentro_do_prazo(data_texto):
             continue
 
         resultados.append(
