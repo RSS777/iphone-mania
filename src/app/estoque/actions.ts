@@ -3,9 +3,10 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { CHECKLIST_ITENS } from "@/lib/iphones";
+import { CHECKLIST_ITENS, proximoStatus } from "@/lib/iphones";
 
 export type IphoneFormState = { error: string | null };
+export type AdvanceStatusState = { error: string | null };
 
 function readIphoneFields(formData: FormData) {
   const modelo = String(formData.get("modelo") ?? "").trim();
@@ -180,4 +181,41 @@ export async function deleteFoto(fotoId: string, path: string, iphoneId: string)
   await supabase.storage.from("iphone-fotos").remove([path]);
   await supabase.from("iphone_fotos").delete().eq("id", fotoId);
   revalidatePath(`/estoque/${iphoneId}`);
+}
+
+export async function advanceStatus(
+  iphoneId: string,
+  _prevState: AdvanceStatusState,
+  _formData: FormData,
+): Promise<AdvanceStatusState> {
+  const supabase = await createClient();
+
+  const { data: iphone } = await supabase
+    .from("iphones")
+    .select("status")
+    .eq("id", iphoneId)
+    .single();
+
+  if (!iphone) return { error: "Item não encontrado." };
+
+  const proximo = proximoStatus(iphone.status);
+  if (!proximo) return { error: "Esse item já está no último status manual." };
+
+  if (proximo === "a_venda") {
+    const { count } = await supabase
+      .from("iphone_fotos")
+      .select("id", { count: "exact", head: true })
+      .eq("iphone_id", iphoneId);
+
+    if (!count || count === 0) {
+      return { error: 'Adicione pelo menos 1 foto antes de avançar para "À venda".' };
+    }
+  }
+
+  const { error } = await supabase.from("iphones").update({ status: proximo }).eq("id", iphoneId);
+  if (error) return { error: "Não deu pra avançar o status. Tenta de novo." };
+
+  revalidatePath("/estoque");
+  revalidatePath(`/estoque/${iphoneId}`);
+  return { error: null };
 }

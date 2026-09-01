@@ -9,6 +9,7 @@ import { IphoneForm } from "../iphone-form";
 import { DeleteIphoneButton } from "./delete-button";
 import { CustoForm } from "./custo-form";
 import { FotoUploader } from "./foto-uploader";
+import { AdvanceStatus } from "./advance-status";
 import { CHECKLIST_ITENS, fotoUrl, type Iphone, type CustoAdicional, type IphoneFoto } from "@/lib/iphones";
 
 type EditIphonePageProps = {
@@ -53,6 +54,8 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
               {iphone.modelo}
             </h1>
           </header>
+
+          <AdvanceStatus iphoneId={id} status={iphone.status} />
 
           <IphoneForm
             action={boundUpdate}

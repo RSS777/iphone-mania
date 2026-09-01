@@ -1,17 +1,10 @@
 import { InlineTag } from "./inline-tag";
-
-const STATUS_LABEL: Record<string, string> = {
-  avaliando: "Avaliando",
-  comprado: "Comprado",
-  preparacao: "Preparação",
-  a_venda: "À venda",
-  vendido: "Vendido",
-};
+import { STATUS_LABEL } from "@/lib/iphones";
 
 export function StatusTag({ status }: { status: string }) {
   return (
     <InlineTag tone={status === "vendido" ? "stamp" : "ink"}>
-      {STATUS_LABEL[status] ?? status}
+      {STATUS_LABEL[status as keyof typeof STATUS_LABEL] ?? status}
     </InlineTag>
   );
 }

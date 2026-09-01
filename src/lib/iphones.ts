@@ -22,6 +22,23 @@ export const CHECKLIST_ITENS = [
   { key: "apple_id_removido", label: "Apple ID removido/Find My desativado" },
 ] as const;
 
+export const STATUS_SEQUENCIA = ["avaliando", "comprado", "preparacao", "a_venda", "vendido"] as const;
+
+export const STATUS_LABEL: Record<(typeof STATUS_SEQUENCIA)[number], string> = {
+  avaliando: "Avaliando",
+  comprado: "Comprado",
+  preparacao: "Em preparação",
+  a_venda: "À venda",
+  vendido: "Vendido",
+};
+
+/** Próximo status na sequência manual (Avaliando → Comprado → Preparação → À venda). "Vendido" não faz parte — só a venda (ticket #7) leva a esse status. */
+export function proximoStatus(atual: string): (typeof STATUS_SEQUENCIA)[number] | null {
+  const index = STATUS_SEQUENCIA.indexOf(atual as (typeof STATUS_SEQUENCIA)[number]);
+  if (index === -1 || index >= 3) return null;
+  return STATUS_SEQUENCIA[index + 1];
+}
+
 export type Iphone = {
   id: string;
   modelo: string;
