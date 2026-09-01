@@ -7,6 +7,7 @@ import { CHECKLIST_ITENS, proximoStatus } from "@/lib/iphones";
 
 export type IphoneFormState = { error: string | null };
 export type AdvanceStatusState = { error: string | null };
+export type VendaFormState = { error: string | null };
 
 function readIphoneFields(formData: FormData) {
   const modelo = String(formData.get("modelo") ?? "").trim();
@@ -218,4 +219,40 @@ export async function advanceStatus(
   revalidatePath("/estoque");
   revalidatePath(`/estoque/${iphoneId}`);
   return { error: null };
+}
+
+export async function registrarVenda(
+  iphoneId: string,
+  _prevState: VendaFormState,
+  formData: FormData,
+): Promise<VendaFormState> {
+  const valorVendaRaw = String(formData.get("valor_venda") ?? "").trim();
+  const dataVenda = String(formData.get("data_venda") ?? "").trim();
+  const canalVenda = String(formData.get("canal_venda") ?? "").trim() || null;
+
+  const valorVenda = Number(valorVendaRaw);
+  if (!valorVendaRaw || Number.isNaN(valorVenda) || valorVenda <= 0) {
+    return { error: "Preencha um valor de venda válido." };
+  }
+  if (!dataVenda) return { error: "Preencha a data da venda." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("registrar_venda", {
+    p_iphone_id: iphoneId,
+    p_valor_venda: valorVenda,
+    p_data_venda: dataVenda,
+    p_canal_venda: canalVenda,
+  });
+
+  if (error) {
+    if (error.message?.includes("status_invalido")) {
+      return { error: 'Só dá pra vender um item que esteja "À venda".' };
+    }
+    return { error: "Não deu pra registrar a venda. Tenta de novo." };
+  }
+
+  revalidatePath("/estoque");
+  revalidatePath(`/estoque/${iphoneId}`);
+  revalidatePath("/caixa");
+  redirect(`/estoque/${iphoneId}`);
 }

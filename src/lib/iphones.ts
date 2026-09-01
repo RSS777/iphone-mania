@@ -50,6 +50,9 @@ export type Iphone = {
   observacoes: string | null;
   valor_compra: number | null;
   data_compra: string | null;
+  valor_venda: number | null;
+  data_venda: string | null;
+  canal_venda: string | null;
   checklist: Record<string, boolean>;
   socio_responsavel_id: string;
   created_at: string;

@@ -10,6 +10,7 @@ import { DeleteIphoneButton } from "./delete-button";
 import { CustoForm } from "./custo-form";
 import { FotoUploader } from "./foto-uploader";
 import { AdvanceStatus } from "./advance-status";
+import { VendaForm } from "./venda-form";
 import { CHECKLIST_ITENS, fotoUrl, type Iphone, type CustoAdicional, type IphoneFoto } from "@/lib/iphones";
 
 type EditIphonePageProps = {
@@ -41,6 +42,10 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
   const boundUpdate = updateIphone.bind(null, id);
   const boundChecklist = updateChecklist.bind(null, id);
   const totalCustos = (custos ?? []).reduce((soma, c) => soma + Number(c.valor), 0);
+  const lucro =
+    iphone.status === "vendido" && iphone.valor_venda != null
+      ? Number(iphone.valor_venda) - (Number(iphone.valor_compra ?? 0) + totalCustos)
+      : null;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-carbon-backdrop px-6 py-12">
@@ -56,6 +61,37 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
           </header>
 
           <AdvanceStatus iphoneId={id} status={iphone.status} />
+
+          {iphone.status === "a_venda" ? (
+            <section className="border-t border-dashed border-paper-line pt-6">
+              <h2 className="font-ticket text-xs font-bold uppercase tracking-[0.18em] text-ink-soft">
+                Registrar venda
+              </h2>
+              <div className="mt-4">
+                <VendaForm iphoneId={id} />
+              </div>
+            </section>
+          ) : null}
+
+          {iphone.status === "vendido" ? (
+            <section className="border-t border-dashed border-paper-line pt-6">
+              <h2 className="font-ticket text-xs font-bold uppercase tracking-[0.18em] text-ink-soft">
+                Venda
+              </h2>
+              <div className="mt-3 flex flex-col gap-1 text-sm text-ink">
+                <p>
+                  Vendido por R$ {Number(iphone.valor_venda).toFixed(2)}
+                  {iphone.data_venda
+                    ? ` em ${new Date(iphone.data_venda + "T00:00:00").toLocaleDateString("pt-BR")}`
+                    : ""}
+                  {iphone.canal_venda ? ` · ${iphone.canal_venda}` : ""}
+                </p>
+                <p className="font-ticket text-base font-bold text-ink">
+                  Lucro R$ {lucro?.toFixed(2)}
+                </p>
+              </div>
+            </section>
+          ) : null}
 
           <IphoneForm
             action={boundUpdate}
