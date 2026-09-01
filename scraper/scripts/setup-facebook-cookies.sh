@@ -228,16 +228,20 @@ pause "Copiou? Aperte Enter e cole no próximo passo."
 stage "Colar num arquivo e validar"
 COOKIES_TMP_FILE="${TMPDIR:-/tmp}/fb-cookies-$$.json"
 COOKIES_TMP_FILE_WIN="$(cygpath -w "$COOKIES_TMP_FILE" 2>/dev/null || echo "$COOKIES_TMP_FILE")"
-say "Vamos abrir o Bloco de Notas. Cole o JSON lá (Ctrl+V), salve e feche."
+: > "$COOKIES_TMP_FILE"
+say "Vamos abrir o Bloco de Notas. Cole o JSON lá (Ctrl+V) e SALVE (Ctrl+S)."
 if command -v notepad.exe >/dev/null 2>&1; then
-  : > "$COOKIES_TMP_FILE"
-  notepad.exe "$COOKIES_TMP_FILE_WIN"
+  notepad.exe "$COOKIES_TMP_FILE_WIN" &
 else
   say "Não achei o Bloco de Notas automaticamente."
-  say "Abra qualquer editor de texto, cole o JSON, e salve como:"
+  say "Abra qualquer editor de texto e salve o JSON em:"
   say "  $COOKIES_TMP_FILE_WIN"
-  pause "Salvou? Aperte Enter pra continuar."
 fi
+# Não confia que o notepad.exe bloqueia até fechar — no Notepad novo do
+# Windows 11 (multi-aba) ele às vezes devolve o controle na hora, o que faria
+# validar um arquivo ainda vazio. Por isso sempre pede confirmação explícita
+# aqui, mesmo com a janela ainda aberta.
+pause "Colou e salvou (Ctrl+S)? Aperte Enter só depois de salvar."
 
 # Passa o caminho no formato Windows pro Python nativo (não o do MSYS) — e lê
 # em bytes primeiro pra lidar com qualquer encoding que o Bloco de Notas usou
@@ -258,21 +262,38 @@ d = json.loads(texto)
 assert isinstance(d, list) and len(d) > 0
 sys.stdout.write(json.dumps(d))
 '
-if [[ ! -s "$COOKIES_TMP_FILE" ]] || [[ -z "$PYTHON_BIN" ]]; then
-  warn "Arquivo vazio ou Python não encontrado. Confira se salvou o arquivo e"
-  warn "rode o script de novo."
+if [[ -z "$PYTHON_BIN" ]]; then
+  warn "Python não encontrado nesse ambiente — não dá pra validar o JSON."
   rm -f "$COOKIES_TMP_FILE"
   exit 1
 fi
-if ! FACEBOOK_COOKIES_JSON=$("$PYTHON_BIN" -c "$DECODE_PY" "$COOKIES_TMP_FILE_WIN" 2>/tmp/fb-cookies-err-$$.txt); then
-  warn "Isso não parece uma lista JSON válida. Detalhe do erro:"
-  note "$(cat /tmp/fb-cookies-err-$$.txt)"
-  warn "Confira se colou o texto certo (deve começar com '[' e terminar com ']')"
-  warn "e rode o script de novo."
-  rm -f "$COOKIES_TMP_FILE" "/tmp/fb-cookies-err-$$.txt"
-  exit 1
-fi
-rm -f "$COOKIES_TMP_FILE" "/tmp/fb-cookies-err-$$.txt"
+
+ERR_FILE="${TMPDIR:-/tmp}/fb-cookies-err-$$.txt"
+TENTATIVAS=0
+while true; do
+  if [[ -s "$COOKIES_TMP_FILE" ]] && FACEBOOK_COOKIES_JSON=$("$PYTHON_BIN" -c "$DECODE_PY" "$COOKIES_TMP_FILE_WIN" 2>"$ERR_FILE"); then
+    break
+  fi
+
+  TENTATIVAS=$((TENTATIVAS + 1))
+  if [[ -s "$COOKIES_TMP_FILE" ]]; then
+    warn "Isso não parece uma lista JSON válida. Detalhe do erro:"
+    note "$(cat "$ERR_FILE" 2>/dev/null)"
+  else
+    warn "O arquivo ainda está vazio — parece que o Bloco de Notas não salvou."
+  fi
+
+  if [[ $TENTATIVAS -ge 5 ]]; then
+    warn "Muitas tentativas. Confira se colou o texto certo (deve começar com"
+    warn "'[' e terminar com ']'), salvou com Ctrl+S, e rode o script de novo."
+    rm -f "$COOKIES_TMP_FILE" "$ERR_FILE"
+    exit 1
+  fi
+
+  warn "Volte no Bloco de Notas, confira o conteúdo e salve de novo (Ctrl+S)."
+  pause "Salvou de novo? Aperte Enter pra tentar validar de novo."
+done
+rm -f "$COOKIES_TMP_FILE" "$ERR_FILE"
 say "JSON válido."
 
 # ── Stage 5: gravar localmente e no GitHub ─────────────────────────────────

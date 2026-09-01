@@ -52,7 +52,12 @@ export function AnuncioCard({
       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[var(--nb-surface-2)]">
         {anuncio.imagem_capa ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={anuncio.imagem_capa} alt="" className="h-full w-full object-cover" />
+          <img
+            src={anuncio.imagem_capa}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="h-full w-full object-cover"
+          />
         ) : null}
       </div>
 
