@@ -2,13 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { FONTES_SCRAPING } from "@/lib/garimpo";
 
 export type ConfigFormState = { error: string | null };
 
 function readConfigFields(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
-  const fonte = String(formData.get("fonte") ?? "olx").trim();
   const termos_busca = String(formData.get("termos_busca") ?? "").trim();
   const modelo = String(formData.get("modelo") ?? "").trim();
   const localizacao = String(formData.get("localizacao") ?? "").trim();
@@ -17,7 +15,6 @@ function readConfigFields(formData: FormData) {
 
   return {
     nome,
-    fonte,
     termos_busca,
     modelo: modelo || null,
     localizacao: localizacao || null,
@@ -34,9 +31,6 @@ export async function createConfig(
 
   if (!fields.nome) return { error: "Dê um nome pra essa busca." };
   if (!fields.termos_busca) return { error: "Preencha os termos de busca." };
-  if (!(FONTES_SCRAPING as readonly string[]).includes(fields.fonte)) {
-    return { error: "Fonte inválida." };
-  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("scraping_configs").insert(fields);

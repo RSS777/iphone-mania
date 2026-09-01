@@ -3,11 +3,15 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { descartarAnuncio, marcarAvaliado } from "./actions";
-import type { ScrapingAnuncio } from "@/lib/garimpo";
+import { FONTE_LABEL, type ScrapingAnuncio } from "@/lib/garimpo";
 
 function formatarPreco(valor: number | null) {
   if (valor == null) return "—";
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function fonteLabel(fonte: string) {
+  return FONTE_LABEL[fonte as keyof typeof FONTE_LABEL] ?? fonte;
 }
 
 export function AnuncioCard({
@@ -36,7 +40,7 @@ export function AnuncioCard({
       const params = new URLSearchParams();
       if (anuncio.titulo) params.set("modelo", anuncio.titulo);
       if (anuncio.preco != null) params.set("valor_compra", String(anuncio.preco));
-      params.set("origem_compra", "OLX");
+      params.set("origem_compra", anuncio.fonte === "facebook" ? "Facebook Marketplace" : "OLX");
       params.set("observacoes", `Anúncio original: ${anuncio.link}`);
 
       router.push(`/estoque/novo?${params.toString()}`);
@@ -53,14 +57,22 @@ export function AnuncioCard({
       </div>
 
       <div className="min-w-0 flex-1">
-        <a
-          href={anuncio.link}
-          target="_blank"
-          rel="noreferrer"
-          className="line-clamp-2 text-[14px] font-bold text-[var(--nb-ink)] underline decoration-[var(--nb-separator)] underline-offset-2"
-        >
-          {anuncio.titulo ?? "Anúncio sem título"}
-        </a>
+        <div className="flex items-start gap-2">
+          <a
+            href={anuncio.link}
+            target="_blank"
+            rel="noreferrer"
+            className="line-clamp-2 min-w-0 flex-1 text-[14px] font-bold text-[var(--nb-ink)] underline decoration-[var(--nb-separator)] underline-offset-2"
+          >
+            {anuncio.titulo ?? "Anúncio sem título"}
+          </a>
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold text-[var(--nb-ink-secondary)]"
+            style={{ backgroundColor: "var(--nb-surface-2)" }}
+          >
+            {fonteLabel(anuncio.fonte)}
+          </span>
+        </div>
 
         <div className="mt-1 flex items-center gap-2 [font-variant-numeric:tabular-nums]">
           <span className="text-[15px] font-extrabold" style={{ color: "var(--tint)" }}>

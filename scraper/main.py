@@ -22,61 +22,58 @@ def main():
     supabase = create_client(url, service_key)
 
     resposta = supabase.table("scraping_configs").select("*").eq("ativo", True).order("created_at").execute()
-    todas_configs = resposta.data or []
+    configs = resposta.data or []
 
-    if not todas_configs:
+    if not configs:
         print("Nenhuma config ativa — nada a fazer.")
         return
-
-    # Enquanto testa (proxy/sessão em validação), processa só a config ativa mais
-    # antiga por rodada, pra não estourar cota nem tomar bloqueio à toa. Pra rodar
-    # todas de uma vez, troque configs = todas_configs.
-    configs = todas_configs[:1]
-    if len(todas_configs) > len(configs):
-        print(f'{len(todas_configs)} configs ativas, processando só "{configs[0]["nome"]}" nessa rodada (limite de teste).')
 
     total_erros = 0
 
     for config in configs:
-        buscar = BUSCADORES.get(config["fonte"])
-        if buscar is None:
-            print(f'[{config["nome"]}] fonte "{config["fonte"]}" não implementada — pulando.')
-            continue
+        erros_da_config = []
+        total_anuncios = 0
 
-        try:
-            resultados = buscar(config)
-            print(f'[{config["nome"]}] {len(resultados)} anúncios encontrados')
+        for fonte, buscar in BUSCADORES.items():
+            try:
+                resultados = buscar(config)
+                total_anuncios += len(resultados)
+                print(f'[{config["nome"]}] {fonte}: {len(resultados)} anúncios encontrados')
 
-            for anuncio in resultados:
-                resp = supabase.rpc(
-                    "processar_anuncio_scraping",
-                    {
-                        "p_config_id": config["id"],
-                        "p_fonte": config["fonte"],
-                        "p_external_id": anuncio["id"],
-                        "p_titulo": anuncio["titulo"],
-                        "p_preco": anuncio["preco"],
-                        "p_link": anuncio["link"],
-                        "p_descricao": anuncio["descricao"],
-                        "p_imagem": anuncio["imagem"],
-                        "p_localizacao": anuncio["localizacao"],
-                    },
-                ).execute()
-                if getattr(resp, "error", None):
-                    print(f'[{config["nome"]}] erro ao processar anúncio {anuncio["id"]}: {resp.error}')
-                    total_erros += 1
+                for anuncio in resultados:
+                    resp = supabase.rpc(
+                        "processar_anuncio_scraping",
+                        {
+                            "p_config_id": config["id"],
+                            "p_fonte": fonte,
+                            "p_external_id": anuncio["id"],
+                            "p_titulo": anuncio["titulo"],
+                            "p_preco": anuncio["preco"],
+                            "p_link": anuncio["link"],
+                            "p_descricao": anuncio["descricao"],
+                            "p_imagem": anuncio["imagem"],
+                            "p_localizacao": anuncio["localizacao"],
+                        },
+                    ).execute()
+                    if getattr(resp, "error", None):
+                        print(f'[{config["nome"]}] {fonte}: erro ao processar anúncio {anuncio["id"]}: {resp.error}')
+                        erros_da_config.append(f"{fonte}: erro ao gravar anúncio")
+            except Exception as err:  # noqa: BLE001 — uma fonte falhando não pode derrubar a outra
+                print(f'[{config["nome"]}] {fonte} falhou: {err}')
+                erros_da_config.append(f"{fonte}: {err}")
 
-            # sucesso — limpa qualquer erro anterior registrado pra essa busca
-            if config.get("ultimo_erro"):
-                supabase.table("scraping_configs").update({"ultimo_erro": None, "ultimo_erro_em": None}).eq(
-                    "id", config["id"]
-                ).execute()
-        except Exception as err:  # noqa: BLE001 — precisa seguir pras próximas configs mesmo se uma falhar
-            print(f'[{config["nome"]}] falhou: {err}')
-            total_erros += 1
+        if erros_da_config:
+            total_erros += len(erros_da_config)
             supabase.table("scraping_configs").update(
-                {"ultimo_erro": str(err), "ultimo_erro_em": datetime.now(timezone.utc).isoformat()}
+                {
+                    "ultimo_erro": " | ".join(erros_da_config),
+                    "ultimo_erro_em": datetime.now(timezone.utc).isoformat(),
+                }
             ).eq("id", config["id"]).execute()
+        elif config.get("ultimo_erro"):
+            supabase.table("scraping_configs").update({"ultimo_erro": None, "ultimo_erro_em": None}).eq(
+                "id", config["id"]
+            ).execute()
 
     if total_erros > 0:
         print(f"Finalizado com {total_erros} erro(s).")

@@ -6,7 +6,6 @@ import { NBTextRow } from "@/components/nb/text-row";
 import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
-import { FONTES_SCRAPING, FONTE_LABEL } from "@/lib/garimpo";
 
 const initialState: ConfigFormState = { error: null };
 
@@ -16,27 +15,7 @@ export function ConfigForm() {
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">
       <NBTextRow id="nome" name="nome" label="Nome da busca" placeholder="ex: iPhone 13 barato" required />
-
-      <div className="rounded-2xl border border-[var(--nb-separator)] bg-[var(--nb-surface)] px-4 py-3">
-        <label
-          htmlFor="fonte"
-          className="block text-[11.5px] font-semibold uppercase tracking-wider text-[var(--nb-ink-tertiary)]"
-        >
-          Fonte
-        </label>
-        <select
-          id="fonte"
-          name="fonte"
-          defaultValue="olx"
-          className="mt-1 w-full bg-transparent text-[15px] text-[var(--nb-ink)] focus:outline-none [color-scheme:dark]"
-        >
-          {FONTES_SCRAPING.map((fonte) => (
-            <option key={fonte} value={fonte}>
-              {FONTE_LABEL[fonte]}
-            </option>
-          ))}
-        </select>
-      </div>
+      <p className="px-1 text-[12.5px] text-[var(--nb-ink-tertiary)]">Busca no OLX e no Facebook Marketplace ao mesmo tempo.</p>
 
       <NBTextRow
         id="termos_busca"

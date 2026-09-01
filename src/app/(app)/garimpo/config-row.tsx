@@ -4,7 +4,7 @@ import { useState } from "react";
 import { updateConfig, toggleConfigAtivo, deleteConfig } from "./actions";
 import { NBTextRow } from "@/components/nb/text-row";
 import { NBMoneyRow } from "@/components/nb/money-row";
-import { FONTE_LABEL, type ScrapingConfig } from "@/lib/garimpo";
+import { type ScrapingConfig } from "@/lib/garimpo";
 
 export function ConfigRow({ config }: { config: ScrapingConfig }) {
   const [editando, setEditando] = useState(false);
@@ -20,7 +20,6 @@ export function ConfigRow({ config }: { config: ScrapingConfig }) {
         className="flex flex-col gap-3 rounded-2xl border border-[var(--nb-separator)] bg-[var(--nb-surface)] p-4"
       >
         <NBTextRow id={`nome-${config.id}`} name="nome" label="Nome da busca" defaultValue={config.nome} required />
-        <input type="hidden" name="fonte" value={config.fonte} />
         <NBTextRow
           id={`termos-${config.id}`}
           name="termos_busca"
@@ -71,7 +70,7 @@ export function ConfigRow({ config }: { config: ScrapingConfig }) {
             ) : null}
           </div>
           <p className="mt-0.5 text-[12.5px] text-[var(--nb-ink-tertiary)]">
-            {FONTE_LABEL[config.fonte]} · &ldquo;{config.termos_busca}&rdquo;
+            &ldquo;{config.termos_busca}&rdquo;
             {config.preco_min || config.preco_max
               ? ` · R$ ${config.preco_min ?? 0} – ${config.preco_max ?? "∞"}`
               : ""}

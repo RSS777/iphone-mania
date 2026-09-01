@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AnuncioCard } from "./anuncio-card";
-import { FONTE_LABEL, type ScrapingAnuncio, type ScrapingConfig } from "@/lib/garimpo";
+import type { ScrapingAnuncio, ScrapingConfig } from "@/lib/garimpo";
 
 type AnunciosListProps = {
   anunciosIniciais: ScrapingAnuncio[];
@@ -82,7 +82,7 @@ export function AnunciosList({ anunciosIniciais, configs }: AnunciosListProps) {
             <option value="todos">Todas</option>
             {configs.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.nome} · {FONTE_LABEL[c.fonte]}
+                {c.nome}
               </option>
             ))}
           </select>

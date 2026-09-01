@@ -8,7 +8,6 @@ export const FONTE_LABEL: Record<(typeof FONTES_SCRAPING)[number], string> = {
 export type ScrapingConfig = {
   id: string;
   nome: string;
-  fonte: (typeof FONTES_SCRAPING)[number];
   termos_busca: string;
   modelo: string | null;
   preco_min: number | null;
@@ -21,8 +20,9 @@ export type ScrapingConfig = {
 };
 
 /** O texto exato levantado em scraper/buscar_facebook.py quando a sessão expira. */
-export function sessaoFacebookExpirou(config: Pick<ScrapingConfig, "fonte" | "ultimo_erro">) {
-  return config.fonte === "facebook" && Boolean(config.ultimo_erro?.toLowerCase().includes("sessão"));
+export function sessaoFacebookExpirou(config: Pick<ScrapingConfig, "ultimo_erro">) {
+  const erro = config.ultimo_erro?.toLowerCase() ?? "";
+  return erro.includes("facebook") && erro.includes("sessão");
 }
 
 export type ScrapingAnuncioStatus = "novo" | "visto" | "descartado" | "avaliado";
