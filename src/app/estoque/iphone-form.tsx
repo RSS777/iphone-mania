@@ -81,6 +81,24 @@ export function IphoneForm({ action, defaultValues, submitLabel, pendingLabel }:
         />
       ) : null}
 
+      <TicketField
+        id="valor_compra"
+        name="valor_compra"
+        type="number"
+        step="0.01"
+        min="0"
+        label="Valor negociado (R$)"
+        defaultValue={defaultValues?.valor_compra ?? undefined}
+      />
+
+      <TicketField
+        id="data_compra"
+        name="data_compra"
+        type="date"
+        label="Data da compra"
+        defaultValue={defaultValues?.data_compra ?? undefined}
+      />
+
       <TicketNote
         id="observacoes"
         name="observacoes"
