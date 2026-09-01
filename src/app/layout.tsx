@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Public_Sans, Courier_Prime } from "next/font/google";
+import { createClient } from "@/lib/supabase/server";
+import { QuickExpenseButton } from "@/components/quick-expense-button";
 import "./globals.css";
 
 const publicSans = Public_Sans({
@@ -24,7 +26,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let categorias: { id: string; nome: string }[] = [];
+  if (user) {
+    const { data } = await supabase
+      .from("categorias_saida")
+      .select("id, nome")
+      .eq("ativo", true)
+      .order("nome");
+    categorias = data ?? [];
+  }
+
   return (
     <html
       lang="pt-BR"
@@ -60,6 +77,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </defs>
         </svg>
         {children}
+        {user ? <QuickExpenseButton categorias={categorias} /> : null}
       </body>
     </html>
   );

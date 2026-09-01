@@ -55,6 +55,39 @@ export async function createLancamento(
   redirect("/caixa");
 }
 
+export type SaidaRapidaState = { error: string | null; success: boolean };
+
+/** Mesmo mecanismo do lançamento manual de saída, mas sem redirecionar — usado pelo pop-up de acesso rápido em qualquer tela. */
+export async function createSaidaRapida(
+  _prevState: SaidaRapidaState,
+  formData: FormData,
+): Promise<SaidaRapidaState> {
+  const valorRaw = String(formData.get("valor") ?? "").trim();
+  const categoria_id = String(formData.get("categoria_id") ?? "").trim() || null;
+  const descricao = String(formData.get("descricao") ?? "").trim();
+  const data = String(formData.get("data") ?? "").trim();
+
+  const valor = Number(valorRaw);
+  if (!valorRaw || Number.isNaN(valor) || valor <= 0) return { error: "Preencha um valor válido.", success: false };
+  if (!categoria_id) return { error: "Escolha uma categoria.", success: false };
+  if (!data) return { error: "Preencha a data.", success: false };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("lancamentos_caixa").insert({
+    tipo: "saida",
+    descricao: descricao || "Saída rápida",
+    valor,
+    data,
+    categoria_id,
+    origem: "manual",
+  });
+
+  if (error) return { error: "Não deu pra lançar. Tenta de novo.", success: false };
+
+  revalidatePath("/caixa");
+  return { error: null, success: true };
+}
+
 export async function updateLancamento(
   id: string,
   _prevState: LancamentoFormState,
