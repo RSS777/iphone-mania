@@ -21,6 +21,7 @@ export default async function CaixaPage() {
   );
 
   function nomeSocio(l: LancamentoCaixa) {
+    if (!l.socio_id) return l.origem === "recorrencia" ? "recorrência automática" : "sistema";
     const nome = l.profiles?.nome ?? l.profiles?.email ?? "—";
     return nome.includes("@") ? nome.split("@")[0] : nome;
   }
@@ -75,12 +76,18 @@ export default async function CaixaPage() {
             + Novo lançamento
           </Link>
 
-          <p className="mt-4 text-center">
+          <p className="mt-4 flex justify-center gap-4 text-center">
             <Link
               href="/caixa/categorias"
               className="font-ticket text-[10px] uppercase tracking-[0.14em] text-ink-faint underline decoration-paper-line decoration-2 underline-offset-4 hover:text-stamp-dark"
             >
               Categorias de saída
+            </Link>
+            <Link
+              href="/caixa/recorrentes"
+              className="font-ticket text-[10px] uppercase tracking-[0.14em] text-ink-faint underline decoration-paper-line decoration-2 underline-offset-4 hover:text-stamp-dark"
+            >
+              Saídas recorrentes
             </Link>
           </p>
         </div>

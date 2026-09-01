@@ -156,3 +156,58 @@ export async function toggleCategoria(id: string, ativo: boolean, _formData: For
   revalidatePath("/caixa/categorias");
   revalidatePath("/caixa/novo");
 }
+
+export type RecorrenteFormState = { error: string | null };
+
+function readRecorrenteFields(formData: FormData) {
+  const descricao = String(formData.get("descricao") ?? "").trim();
+  const valorRaw = String(formData.get("valor") ?? "").trim();
+  const categoria_id = String(formData.get("categoria_id") ?? "").trim() || null;
+  const diaRaw = String(formData.get("dia_vencimento") ?? "").trim();
+
+  return {
+    descricao,
+    valor: valorRaw ? Number(valorRaw) : NaN,
+    categoria_id,
+    dia_vencimento: diaRaw ? Number(diaRaw) : NaN,
+  };
+}
+
+function validateRecorrente(fields: ReturnType<typeof readRecorrenteFields>): string | null {
+  if (!fields.descricao) return "Preencha a descrição.";
+  if (!fields.valor || Number.isNaN(fields.valor) || fields.valor <= 0) return "Preencha um valor válido.";
+  if (!fields.categoria_id) return "Escolha uma categoria.";
+  if (!fields.dia_vencimento || Number.isNaN(fields.dia_vencimento) || fields.dia_vencimento < 1 || fields.dia_vencimento > 28) {
+    return "O dia de vencimento precisa ser entre 1 e 28.";
+  }
+  return null;
+}
+
+export async function createRecorrente(
+  _prevState: RecorrenteFormState,
+  formData: FormData,
+): Promise<RecorrenteFormState> {
+  const fields = readRecorrenteFields(formData);
+  const validationError = validateRecorrente(fields);
+  if (validationError) return { error: validationError };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("saidas_recorrentes").insert({
+    descricao: fields.descricao,
+    valor: fields.valor,
+    categoria_id: fields.categoria_id,
+    dia_vencimento: fields.dia_vencimento,
+    frequencia: "mensal",
+  });
+
+  if (error) return { error: "Não deu pra cadastrar a recorrência. Tenta de novo." };
+
+  revalidatePath("/caixa/recorrentes");
+  redirect("/caixa/recorrentes");
+}
+
+export async function toggleRecorrente(id: string, ativo: boolean, _formData: FormData) {
+  const supabase = await createClient();
+  await supabase.from("saidas_recorrentes").update({ ativo: !ativo }).eq("id", id);
+  revalidatePath("/caixa/recorrentes");
+}

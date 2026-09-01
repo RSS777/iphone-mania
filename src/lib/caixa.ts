@@ -14,10 +14,22 @@ export type LancamentoCaixa = {
   data: string;
   origem: "manual" | "venda_iphone" | "recorrencia";
   iphone_id: string | null;
-  socio_id: string;
+  socio_id: string | null;
   created_at: string;
   categorias_saida?: { nome: string } | null;
   profiles?: { nome: string | null; email: string } | null;
+};
+
+export type SaidaRecorrente = {
+  id: string;
+  descricao: string;
+  valor: number;
+  categoria_id: string;
+  frequencia: "mensal";
+  dia_vencimento: number;
+  ativo: boolean;
+  created_at: string;
+  categorias_saida?: { nome: string } | null;
 };
 
 export function formatBRL(valor: number) {
