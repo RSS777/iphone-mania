@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { registrarVenda, type VendaFormState } from "../actions";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 
@@ -14,15 +15,7 @@ export function VendaForm({ iphoneId }: { iphoneId: string }) {
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">
-      <NBTextRow
-        id="valor_venda"
-        name="valor_venda"
-        type="number"
-        step="0.01"
-        min="0"
-        label="Valor de venda (R$)"
-        className="[font-variant-numeric:tabular-nums]"
-      />
+      <NBMoneyRow id="valor_venda" name="valor_venda" label="Valor de venda" />
       <NBTextRow
         id="data_venda"
         name="data_venda"

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createConfig, type ConfigFormState } from "./actions";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 import { FONTES_SCRAPING, FONTE_LABEL } from "@/lib/garimpo";
@@ -48,8 +49,8 @@ export function ConfigForm() {
       <NBTextRow id="modelo" name="modelo" label="Modelo (opcional)" placeholder="ex: iPhone 13" />
 
       <div className="grid grid-cols-2 gap-3">
-        <NBTextRow id="preco_min" name="preco_min" type="number" step="0.01" min="0" label="Preço mín. (R$)" />
-        <NBTextRow id="preco_max" name="preco_max" type="number" step="0.01" min="0" label="Preço máx. (R$)" />
+        <NBMoneyRow id="preco_min" name="preco_min" label="Preço mín." />
+        <NBMoneyRow id="preco_max" name="preco_max" label="Preço máx." />
       </div>
 
       <NBTextRow id="localizacao" name="localizacao" label="Localização (opcional)" placeholder="ex: São Paulo" />

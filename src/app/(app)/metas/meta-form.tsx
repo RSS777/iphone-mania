@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { salvarMeta, type MetaFormState } from "./actions";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 
@@ -14,16 +15,7 @@ export function MetaForm({ mesInput, valorAtual }: { mesInput: string; valorAtua
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">
       <NBTextRow id="mes" name="mes" type="month" label="Mês de referência" defaultValue={mesInput} required />
-      <NBTextRow
-        id="meta_valor"
-        name="meta_valor"
-        type="number"
-        step="0.01"
-        min="0"
-        label="Meta de lucro (R$)"
-        defaultValue={valorAtual}
-        required
-      />
+      <NBMoneyRow id="meta_valor" name="meta_valor" label="Meta de lucro" defaultValue={valorAtual} />
 
       {state.error ? <NBErrorBanner>{state.error}</NBErrorBanner> : null}
 

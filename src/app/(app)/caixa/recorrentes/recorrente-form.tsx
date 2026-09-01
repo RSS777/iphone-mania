@@ -4,6 +4,7 @@ import { useActionState, type SelectHTMLAttributes } from "react";
 import { createRecorrente, type RecorrenteFormState } from "../actions";
 import type { CategoriaSaida } from "@/lib/caixa";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 
@@ -37,7 +38,7 @@ export function RecorrenteForm({ categorias }: { categorias: CategoriaSaida[] })
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">
       <NBTextRow id="descricao" name="descricao" label="Descrição" required />
-      <NBTextRow id="valor" name="valor" type="number" step="0.01" min="0" label="Valor (R$)" required />
+      <NBMoneyRow id="valor" name="valor" label="Valor" />
 
       <NBSelectRow id="categoria_id" name="categoria_id" label="Categoria" defaultValue="">
         <option value="" disabled>

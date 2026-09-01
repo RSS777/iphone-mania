@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState, type SelectHTMLAttributes } from "
 import type { LancamentoFormState } from "./actions";
 import type { CategoriaSaida, LancamentoCaixa } from "@/lib/caixa";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 
@@ -71,16 +72,7 @@ export function LancamentoForm({ action, categorias, defaultValues, submitLabel 
         required
       />
 
-      <NBTextRow
-        id="valor"
-        name="valor"
-        type="number"
-        step="0.01"
-        min="0"
-        label="Valor (R$)"
-        defaultValue={defaultValues?.valor}
-        required
-      />
+      <NBMoneyRow id="valor" name="valor" label="Valor" defaultValue={defaultValues?.valor} />
 
       <NBTextRow
         id="data"

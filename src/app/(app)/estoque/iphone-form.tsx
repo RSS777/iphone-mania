@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import type { IphoneFormState } from "./actions";
 import { ORIGENS_COMPRA, CAPACIDADES_GB, type Iphone } from "@/lib/iphones";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
 
@@ -102,15 +103,11 @@ export function IphoneForm({ action, defaultValues, submitLabel, pendingLabel }:
         />
       ) : null}
 
-      <NBTextRow
+      <NBMoneyRow
         id="valor_compra"
         name="valor_compra"
-        type="number"
-        step="0.01"
-        min="0"
-        label="Valor negociado (R$)"
-        defaultValue={defaultValues?.valor_compra ?? undefined}
-        className="[font-variant-numeric:tabular-nums]"
+        label="Valor negociado"
+        defaultValue={defaultValues?.valor_compra}
       />
 
       <NBTextRow

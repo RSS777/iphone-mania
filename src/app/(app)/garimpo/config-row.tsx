@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { updateConfig, toggleConfigAtivo, deleteConfig } from "./actions";
 import { NBTextRow } from "@/components/nb/text-row";
+import { NBMoneyRow } from "@/components/nb/money-row";
 import { FONTE_LABEL, type ScrapingConfig } from "@/lib/garimpo";
 
 export function ConfigRow({ config }: { config: ScrapingConfig }) {
@@ -29,22 +30,8 @@ export function ConfigRow({ config }: { config: ScrapingConfig }) {
         />
         <NBTextRow id={`modelo-${config.id}`} name="modelo" label="Modelo" defaultValue={config.modelo ?? undefined} />
         <div className="grid grid-cols-2 gap-3">
-          <NBTextRow
-            id={`min-${config.id}`}
-            name="preco_min"
-            type="number"
-            step="0.01"
-            label="Preço mín."
-            defaultValue={config.preco_min ?? undefined}
-          />
-          <NBTextRow
-            id={`max-${config.id}`}
-            name="preco_max"
-            type="number"
-            step="0.01"
-            label="Preço máx."
-            defaultValue={config.preco_max ?? undefined}
-          />
+          <NBMoneyRow id={`min-${config.id}`} name="preco_min" label="Preço mín." defaultValue={config.preco_min} />
+          <NBMoneyRow id={`max-${config.id}`} name="preco_max" label="Preço máx." defaultValue={config.preco_max} />
         </div>
         <NBTextRow
           id={`loc-${config.id}`}
