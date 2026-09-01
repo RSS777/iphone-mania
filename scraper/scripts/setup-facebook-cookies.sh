@@ -227,33 +227,59 @@ pause "Copiou? Aperte Enter e cole no próximo passo."
 # num arquivo de texto comum, onde colar sempre funciona.
 stage "Colar num arquivo e validar"
 COOKIES_TMP_FILE="${TMPDIR:-/tmp}/fb-cookies-$$.json"
+COOKIES_TMP_FILE_WIN="$(cygpath -w "$COOKIES_TMP_FILE" 2>/dev/null || echo "$COOKIES_TMP_FILE")"
 say "Vamos abrir o Bloco de Notas. Cole o JSON lá (Ctrl+V), salve e feche."
 if command -v notepad.exe >/dev/null 2>&1; then
   : > "$COOKIES_TMP_FILE"
-  notepad.exe "$(cygpath -w "$COOKIES_TMP_FILE" 2>/dev/null || echo "$COOKIES_TMP_FILE")"
+  notepad.exe "$COOKIES_TMP_FILE_WIN"
 else
   say "Não achei o Bloco de Notas automaticamente."
   say "Abra qualquer editor de texto, cole o JSON, e salve como:"
-  say "  $COOKIES_TMP_FILE"
+  say "  $COOKIES_TMP_FILE_WIN"
   pause "Salvou? Aperte Enter pra continuar."
 fi
 
+# Passa o caminho no formato Windows pro Python nativo (não o do MSYS) — e lê
+# em bytes primeiro pra lidar com qualquer encoding que o Bloco de Notas usou
+# (UTF-8, UTF-8 com BOM, ou UTF-16, dependendo da versão do Windows).
 PYTHON_BIN=$(command -v python3 || command -v python || true)
-if [[ ! -s "$COOKIES_TMP_FILE" ]] || [[ -z "$PYTHON_BIN" ]] || ! "$PYTHON_BIN" -c 'import json,sys; d=json.load(open(sys.argv[1], encoding="utf-8")); assert isinstance(d, list) and len(d) > 0' "$COOKIES_TMP_FILE" 2>/dev/null; then
-  warn "Isso não parece uma lista JSON válida. Confira se colou o texto certo"
-  warn "(deve começar com '[' e terminar com ']') e rode o script de novo."
+DECODE_PY='
+import json, sys
+raw = open(sys.argv[1], "rb").read()
+for enc in ("utf-8-sig", "utf-16", "utf-8"):
+    try:
+        texto = raw.decode(enc)
+        break
+    except UnicodeError:
+        continue
+else:
+    sys.exit(1)
+d = json.loads(texto)
+assert isinstance(d, list) and len(d) > 0
+sys.stdout.write(json.dumps(d))
+'
+if [[ ! -s "$COOKIES_TMP_FILE" ]] || [[ -z "$PYTHON_BIN" ]]; then
+  warn "Arquivo vazio ou Python não encontrado. Confira se salvou o arquivo e"
+  warn "rode o script de novo."
   rm -f "$COOKIES_TMP_FILE"
   exit 1
 fi
-FACEBOOK_COOKIES_JSON=$("$PYTHON_BIN" -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1], encoding="utf-8"))))' "$COOKIES_TMP_FILE")
-rm -f "$COOKIES_TMP_FILE"
+if ! FACEBOOK_COOKIES_JSON=$("$PYTHON_BIN" -c "$DECODE_PY" "$COOKIES_TMP_FILE_WIN" 2>/tmp/fb-cookies-err-$$.txt); then
+  warn "Isso não parece uma lista JSON válida. Detalhe do erro:"
+  note "$(cat /tmp/fb-cookies-err-$$.txt)"
+  warn "Confira se colou o texto certo (deve começar com '[' e terminar com ']')"
+  warn "e rode o script de novo."
+  rm -f "$COOKIES_TMP_FILE" "/tmp/fb-cookies-err-$$.txt"
+  exit 1
+fi
+rm -f "$COOKIES_TMP_FILE" "/tmp/fb-cookies-err-$$.txt"
 say "JSON válido."
 
 # ── Stage 5: gravar localmente e no GitHub ─────────────────────────────────
 stage "Guardar o segredo"
 write_env FACEBOOK_COOKIES_JSON "$FACEBOOK_COOKIES_JSON"
 note "gravado em scraper/.env — pra testar localmente, rode:"
-note "  set -a; source scraper/.env; set +a; cd scraper && python main.py"
+note "  cd scraper && python run_local.py"
 note "(esse arquivo já está no .gitignore — nunca vai pro GitHub por engano)."
 set_secret FACEBOOK_COOKIES_JSON "$FACEBOOK_COOKIES_JSON"
 note "Esse segredo expira quando sua sessão do Facebook expirar — se o"
