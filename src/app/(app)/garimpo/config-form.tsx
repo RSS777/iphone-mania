@@ -31,9 +31,8 @@ export function ConfigForm() {
           className="mt-1 w-full bg-transparent text-[15px] text-[var(--nb-ink)] focus:outline-none [color-scheme:dark]"
         >
           {FONTES_SCRAPING.map((fonte) => (
-            <option key={fonte} value={fonte} disabled={fonte !== "olx"}>
+            <option key={fonte} value={fonte}>
               {FONTE_LABEL[fonte]}
-              {fonte !== "olx" ? " (em breve)" : ""}
             </option>
           ))}
         </select>

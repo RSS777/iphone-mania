@@ -10,13 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: 22
-      - run: npm install
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
         working-directory: ./scraper
-      - run: node index.mjs
+      - run: scrapling install
+        working-directory: ./scraper
+      - run: python main.py
         working-directory: ./scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FACEBOOK_COOKIES_JSON: ${{ secrets.FACEBOOK_COOKIES_JSON }}
