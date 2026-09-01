@@ -51,6 +51,12 @@ export default async function HomePage() {
             >
               Lucro Geral
             </Link>
+            <Link
+              href="/metas"
+              className="block border-2 border-dashed border-paper-line py-4 text-center font-ticket text-sm font-bold uppercase tracking-[0.18em] text-ink-soft transition-colors hover:border-stamp-dark hover:text-stamp-dark"
+            >
+              Metas Mensais
+            </Link>
           </div>
 
           <form action={signOut} className="mt-8">
