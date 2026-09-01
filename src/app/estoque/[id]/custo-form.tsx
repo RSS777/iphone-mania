@@ -13,7 +13,7 @@ export function CustoForm({ iphoneId }: { iphoneId: string }) {
   const [state, formAction] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} noValidate className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
         <TicketField id="descricao" name="descricao" label="Descrição" className="col-span-2" required />
         <TicketField id="valor" name="valor" type="number" step="0.01" min="0" label="Valor (R$)" required />

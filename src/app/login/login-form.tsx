@@ -16,7 +16,7 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <form action={loginAction} className="flex flex-col gap-6">
+      <form action={loginAction} noValidate className="flex flex-col gap-6">
         <TicketField
           id="email"
           name="email"
@@ -54,7 +54,7 @@ export function LoginForm() {
             Se esse email tiver cadastro, o link de recuperação já foi enviado.
           </p>
         ) : (
-          <form action={forgotAction} className="flex flex-col gap-3 text-left">
+          <form action={forgotAction} noValidate className="flex flex-col gap-3 text-left">
             <TicketField id="forgot-email" name="email" type="email" label="Email pra recuperação" required />
             {forgotState.error ? <ErrataNote>{forgotState.error}</ErrataNote> : null}
             <button

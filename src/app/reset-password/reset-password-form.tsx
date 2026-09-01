@@ -55,7 +55,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <form action={action} className="flex flex-col gap-6">
+    <form action={action} noValidate className="flex flex-col gap-6">
       <TicketField
         id="password"
         name="password"

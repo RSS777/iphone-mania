@@ -28,7 +28,7 @@ export function IphoneForm({ action, defaultValues, submitLabel, pendingLabel }:
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-6">
+    <form action={formAction} noValidate className="flex flex-col gap-6">
       <TicketField id="modelo" name="modelo" label="Modelo" defaultValue={defaultValues?.modelo} required />
 
       <TicketSelect
