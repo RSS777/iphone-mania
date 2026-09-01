@@ -39,9 +39,7 @@ export function AnunciosList({ anunciosIniciais, configs }: AnunciosListProps) {
             setAnuncios((atuais) => {
               const semEsse = atuais.filter((a) => a.id !== linha.id);
               if (linha.status !== "novo") return semEsse;
-              return [linha, ...semEsse].sort(
-                (a, b) => new Date(b.atualizado_em).getTime() - new Date(a.atualizado_em).getTime(),
-              );
+              return [linha, ...semEsse].sort((a, b) => (a.preco ?? Infinity) - (b.preco ?? Infinity));
             });
           },
         )

@@ -9,6 +9,7 @@ tanto local quanto no runner do GitHub Actions.
 
 from urllib.parse import quote
 from scrapling.fetchers import StealthyFetcher
+from util_localizacao import bate_cidade
 
 
 def _texto(selector_list):
@@ -27,6 +28,7 @@ def buscar_olx(config: dict) -> list[dict]:
 
     preco_min = config.get("preco_min") or 0
     preco_max = config.get("preco_max") or float("inf")
+    cidades = config.get("cidades") or []
     resultados = []
 
     for card in page.css(".olx-adcard"):
@@ -53,6 +55,8 @@ def buscar_olx(config: dict) -> list[dict]:
             continue
         if preco < preco_min or preco > preco_max:
             continue
+        if not bate_cidade(localizacao, cidades):
+            continue
 
         resultados.append(
             {
@@ -62,7 +66,7 @@ def buscar_olx(config: dict) -> list[dict]:
                 "link": link,
                 "imagem": imagem,
                 "descricao": "",
-                "localizacao": localizacao or config.get("localizacao"),
+                "localizacao": localizacao or None,
             }
         )
 

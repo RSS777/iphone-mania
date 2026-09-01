@@ -9,7 +9,7 @@ function readConfigFields(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
   const termos_busca = String(formData.get("termos_busca") ?? "").trim();
   const modelo = String(formData.get("modelo") ?? "").trim();
-  const localizacao = String(formData.get("localizacao") ?? "").trim();
+  const cidades = Array.from(new Set(formData.getAll("cidades").map((v) => String(v).trim()).filter(Boolean)));
   const precoMinRaw = String(formData.get("preco_min") ?? "").trim();
   const precoMaxRaw = String(formData.get("preco_max") ?? "").trim();
 
@@ -17,7 +17,7 @@ function readConfigFields(formData: FormData) {
     nome,
     termos_busca,
     modelo: modelo || null,
-    localizacao: localizacao || null,
+    cidades,
     preco_min: precoMinRaw ? Number(precoMinRaw) : null,
     preco_max: precoMaxRaw ? Number(precoMaxRaw) : null,
   };

@@ -10,7 +10,7 @@ export default async function GarimpoPage() {
       .from("scraping_anuncios")
       .select("*")
       .eq("status", "novo")
-      .order("atualizado_em", { ascending: false })
+      .order("preco", { ascending: true })
       .returns<ScrapingAnuncio[]>(),
     supabase.from("scraping_configs").select("*").order("nome").returns<ScrapingConfig[]>(),
   ]);

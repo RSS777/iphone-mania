@@ -15,6 +15,7 @@ import os
 import re
 from urllib.parse import quote
 from scrapling.fetchers import StealthyFetcher
+from util_localizacao import bate_cidade
 
 # O Cookie-Editor exporta num formato próprio (expirationDate, sameSite em
 # minúsculo/"no_restriction") diferente do que o Playwright espera
@@ -69,6 +70,7 @@ def buscar_facebook_marketplace(config: dict) -> list[dict]:
 
     preco_min = config.get("preco_min") or 0
     preco_max = config.get("preco_max") or float("inf")
+    cidades = config.get("cidades") or []
     resultados = []
     vistos = set()
 
@@ -114,6 +116,8 @@ def buscar_facebook_marketplace(config: dict) -> list[dict]:
             continue
         if preco < preco_min or preco > preco_max:
             continue
+        if not bate_cidade(localizacao, cidades):
+            continue
 
         resultados.append(
             {
@@ -123,7 +127,7 @@ def buscar_facebook_marketplace(config: dict) -> list[dict]:
                 "link": link_absoluto,
                 "imagem": imagem,
                 "descricao": "",
-                "localizacao": localizacao or config.get("localizacao"),
+                "localizacao": localizacao,
             }
         )
 

@@ -5,6 +5,7 @@ import { updateConfig, toggleConfigAtivo, deleteConfig } from "./actions";
 import { NBTextRow } from "@/components/nb/text-row";
 import { NBMoneyRow } from "@/components/nb/money-row";
 import { type ScrapingConfig } from "@/lib/garimpo";
+import { CityChips } from "./city-chips";
 
 export function ConfigRow({ config }: { config: ScrapingConfig }) {
   const [editando, setEditando] = useState(false);
@@ -32,12 +33,7 @@ export function ConfigRow({ config }: { config: ScrapingConfig }) {
           <NBMoneyRow id={`min-${config.id}`} name="preco_min" label="Preço mín." defaultValue={config.preco_min} />
           <NBMoneyRow id={`max-${config.id}`} name="preco_max" label="Preço máx." defaultValue={config.preco_max} />
         </div>
-        <NBTextRow
-          id={`loc-${config.id}`}
-          name="localizacao"
-          label="Localização"
-          defaultValue={config.localizacao ?? undefined}
-        />
+        <CityChips name="cidades" defaultValue={config.cidades} />
         <div className="mt-1 flex items-center gap-4">
           <button type="submit" className="text-[13px] font-bold" style={{ color: "var(--tint)" }}>
             Salvar
@@ -74,6 +70,7 @@ export function ConfigRow({ config }: { config: ScrapingConfig }) {
             {config.preco_min || config.preco_max
               ? ` · R$ ${config.preco_min ?? 0} – ${config.preco_max ?? "∞"}`
               : ""}
+            {config.cidades.length > 0 ? ` · ${config.cidades.join(", ")}` : ""}
           </p>
         </div>
       </div>

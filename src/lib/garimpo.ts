@@ -12,7 +12,7 @@ export type ScrapingConfig = {
   modelo: string | null;
   preco_min: number | null;
   preco_max: number | null;
-  localizacao: string | null;
+  cidades: string[];
   ativo: boolean;
   created_at: string;
   ultimo_erro: string | null;

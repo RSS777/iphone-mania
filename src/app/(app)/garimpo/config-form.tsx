@@ -6,6 +6,7 @@ import { NBTextRow } from "@/components/nb/text-row";
 import { NBMoneyRow } from "@/components/nb/money-row";
 import { NBButton } from "@/components/nb/button";
 import { NBErrorBanner } from "@/components/nb/error-banner";
+import { CityChips } from "./city-chips";
 
 const initialState: ConfigFormState = { error: null };
 
@@ -31,7 +32,7 @@ export function ConfigForm() {
         <NBMoneyRow id="preco_max" name="preco_max" label="Preço máx." />
       </div>
 
-      <NBTextRow id="localizacao" name="localizacao" label="Localização (opcional)" placeholder="ex: São Paulo" />
+      <CityChips name="cidades" />
 
       {state.error ? <NBErrorBanner>{state.error}</NBErrorBanner> : null}
 
