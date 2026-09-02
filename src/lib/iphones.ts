@@ -198,6 +198,14 @@ function juntarNatural(itens: string[]): string {
   return `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
 }
 
+/** Tira espaço/acento pra virar uma palavra só, pronta pra virar #hashtag. */
+function paraHashtag(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "");
+}
+
 export type AnuncioGerado = { titulo: string; descricao: string };
 
 /**
@@ -248,6 +256,17 @@ export function gerarAnuncio(
     "Aparelho original, sem nenhum detalhe escondido além do que já está descrito aqui.",
     "Chama no chat!",
   );
+
+  const hashtags = [
+    `#${paraHashtag(modeloComPrefixo)}`,
+    `#iPhone${iphone.capacidade_gb}GB`,
+    `#${paraHashtag(cor)}`,
+    "#Seminovo",
+    "#iPhoneUsado",
+    "#Apple",
+  ];
+  if (bateriaOk) hashtags.push("#BateriaBoa");
+  linhas.push("", hashtags.join(" "));
 
   return { titulo, descricao: linhas.join("\n") };
 }
