@@ -60,6 +60,46 @@ export const CHECKLIST_ITENS = [
     label: "Apple ID removido/Find My desativado",
     como: "Confirme em Ajustes que não há Apple ID logado e que Buscar (Find My) está desativado — o ideal é o aparelho estar resetado, na tela inicial de configuração.",
   },
+  {
+    key: "audio_ok",
+    label: "Áudio (microfone + alto-falante)",
+    como: "Abra o app Gravador de Voz, grave um áudio de alguns segundos falando normal e dando um toque mais forte, depois dê o play no volume máximo. Se tiver chiado, corte ou som abafado, é sinal de problema no microfone ou no alto-falante.",
+  },
+  {
+    key: "som_volume_alto_ok",
+    label: "Som em volume alto",
+    como: 'Abra o app Música (ou um vídeo qualquer) e toque algo no volume máximo. Preste atenção se range, distorce ou soa "rachado" — indício de membrana do alto-falante danificada.',
+  },
+  {
+    key: "vibracao_ok",
+    label: "Vibração",
+    como: 'Ative o modo silencioso (chave lateral) e abra o app Relógio, inicie um Timer curto. Sinta se a vibração é firme e uniforme, não fraca nem "granulada".',
+  },
+  {
+    key: "porta_carga_ok",
+    label: "Porta de carga",
+    como: 'Conecte o cabo de carregar (de preferência o do próprio vendedor) e veja se o ícone de bateria muda para "carregando" rápido e sem precisar ficar mexendo no cabo pra pegar contato.',
+  },
+  {
+    key: "multitouch_ok",
+    label: "Toque na tela (multitouch)",
+    como: 'Abra o app Notas, toque em desenhar (rascunho) e passe o dedo por toda a tela, incluindo os cantos e as bordas, procurando algum ponto onde o traço "falha" ou não responde.',
+  },
+  {
+    key: "sensor_proximidade_ok",
+    label: "Sensor de proximidade",
+    como: "Faça uma ligação (mesmo que caia) e encoste o rosto/orelha no aparelho perto do alto-falante de cima. A tela deve apagar sozinha e voltar ao afastar.",
+  },
+  {
+    key: "sensor_luz_ok",
+    label: "Sensor de luz (brilho automático)",
+    como: "Vá em Ajustes > Tela e Brilho, ative o Brilho Automático, tampe a câmera frontal com o dedo e veja se a tela escurece; destampe e veja se clareia de novo.",
+  },
+  {
+    key: "atualizacao_ativacao_ok",
+    label: "Atualização e bloqueio de ativação",
+    como: "Vá em Ajustes > Geral > Atualização de Software e veja se ele aceita a versão mais recente do iOS (sinal de que não está preso a operadora/versão antiga). Peça ao vendedor pra confirmar que sabe a senha do Apple ID, caso precise reativar o aparelho depois de um reset.",
+  },
 ] as const;
 
 export const STATUS_SEQUENCIA = ["avaliando", "comprado", "preparacao", "a_venda", "vendido"] as const;
