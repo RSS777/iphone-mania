@@ -246,7 +246,7 @@ export function gerarAnuncio(
   linhas.push(
     "",
     "Aparelho original, sem nenhum detalhe escondido além do que já está descrito aqui.",
-    "Chama no chat que a gente combina e te mando mais fotos!",
+    "Chama no chat!",
   );
 
   return { titulo, descricao: linhas.join("\n") };
