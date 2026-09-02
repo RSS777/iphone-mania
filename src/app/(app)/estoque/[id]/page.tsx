@@ -8,6 +8,7 @@ import { CustoForm } from "./custo-form";
 import { FotoUploader } from "./foto-uploader";
 import { AdvanceStatus } from "./advance-status";
 import { VendaForm } from "./venda-form";
+import { ChecklistItem } from "./checklist-item";
 import { CHECKLIST_ITENS, fotoUrl, type Iphone, type CustoAdicional, type IphoneFoto } from "@/lib/iphones";
 import { NBButton } from "@/components/nb/button";
 
@@ -114,16 +115,13 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
 
           <form action={boundChecklist} className="mt-3 flex flex-col gap-3">
             {CHECKLIST_ITENS.map((item) => (
-              <label key={item.key} className="flex items-center gap-3 text-[14.5px] text-[var(--nb-ink)]">
-                <input
-                  id={item.key}
-                  type="checkbox"
-                  name={item.key}
-                  defaultChecked={Boolean(iphone.checklist?.[item.key])}
-                  className="h-[18px] w-[18px] shrink-0 rounded-md border-[var(--nb-separator)] accent-[var(--nb-estoque)]"
-                />
-                {item.label}
-              </label>
+              <ChecklistItem
+                key={item.key}
+                itemKey={item.key}
+                label={item.label}
+                como={"como" in item ? item.como : undefined}
+                defaultChecked={Boolean(iphone.checklist?.[item.key])}
+              />
             ))}
             <NBButton type="submit" variant="tinted" pendingLabel="Salvando…" className="mt-2">
               Salvar checklist
