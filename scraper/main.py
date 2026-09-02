@@ -13,6 +13,14 @@ from buscar_olx import buscar_olx
 # Só OLX por enquanto.
 BUSCADORES = {"olx": buscar_olx}
 
+# Com muitas buscas ativas, processar todas numa rodada só passava de
+# 25-30min — mais que o intervalo do próprio cron (20min), o que fazia o
+# GitHub Actions atrasar/pular rodadas inteiras (confirmado: o cron ficou
+# 3h+ sem disparar). Agora processa só um lote pequeno por vez, sempre as
+# buscas que estão há mais tempo sem rodar (rodízio) — cobre todas ao longo
+# de várias execuções, sem nenhuma rodada estourar o tempo do cron.
+TAMANHO_LOTE = int(os.environ.get("GARIMPO_TAMANHO_LOTE", "3"))
+
 
 def _erros_por_fonte(texto_erro: str | None) -> dict[str, str]:
     """'olx: X | facebook: Y' -> {'olx': 'X', 'facebook': 'Y'}"""
@@ -35,23 +43,33 @@ def main():
 
     supabase = create_client(url, service_key)
 
-    resposta = supabase.table("scraping_configs").select("*").eq("ativo", True).order("created_at").execute()
-    configs = resposta.data or []
+    resposta = (
+        supabase.table("scraping_configs")
+        .select("*")
+        .eq("ativo", True)
+        .order("ultima_execucao_em", desc=False, nullsfirst=True)
+        .execute()
+    )
+    todas_configs = resposta.data or []
 
-    if not configs:
+    if not todas_configs:
         print("Nenhuma config ativa — nada a fazer.")
         return
+
+    configs = todas_configs[:TAMANHO_LOTE]
+    if len(todas_configs) > len(configs):
+        nomes_resto = ", ".join(c["nome"] for c in todas_configs[len(configs) :])
+        print(f"{len(todas_configs)} buscas ativas, processando {len(configs)} nessa rodada (rodízio).")
+        print(f"Ficam pra próxima(s) rodada(s): {nomes_resto}")
 
     total_erros = 0
 
     for indice, config in enumerate(configs):
-        # Com várias configs ativas, disparar tudo em sequência rápida contra
-        # o Cloudflare do OLX vindo do mesmo IP levanta suspeita — foi o que
-        # aconteceu: maioria "0 anúncios" e a última com 404. Espaça as
-        # requisições (com jitter, não um intervalo fixo/previsível) pra
-        # parecer navegação normal, não scraping em rajada.
+        # Disparar tudo em sequência rápida contra o Cloudflare do OLX vindo
+        # do mesmo IP levanta suspeita — espaça as requisições (com jitter,
+        # não um intervalo fixo/previsível) pra parecer navegação normal.
         if indice > 0:
-            pausa = random.uniform(8, 18)
+            pausa = random.uniform(15, 30)
             print(f"— pausa de {pausa:.1f}s antes da próxima busca —")
             time.sleep(pausa)
 
@@ -85,16 +103,16 @@ def main():
                 print(f'[{config["nome"]}] {fonte} falhou: {err}')
                 erros_atuais[fonte] = str(err)
 
+        agora = datetime.now(timezone.utc).isoformat()
+        atualizacao = {"ultima_execucao_em": agora}
         if erros_atuais:
             total_erros += len(erros_atuais)
-            texto = " | ".join(f"{f}: {m}" for f, m in erros_atuais.items())
-            supabase.table("scraping_configs").update(
-                {"ultimo_erro": texto, "ultimo_erro_em": datetime.now(timezone.utc).isoformat()}
-            ).eq("id", config["id"]).execute()
+            atualizacao["ultimo_erro"] = " | ".join(f"{f}: {m}" for f, m in erros_atuais.items())
+            atualizacao["ultimo_erro_em"] = agora
         elif config.get("ultimo_erro"):
-            supabase.table("scraping_configs").update({"ultimo_erro": None, "ultimo_erro_em": None}).eq(
-                "id", config["id"]
-            ).execute()
+            atualizacao["ultimo_erro"] = None
+            atualizacao["ultimo_erro_em"] = None
+        supabase.table("scraping_configs").update(atualizacao).eq("id", config["id"]).execute()
 
     if total_erros > 0:
         print(f"Finalizado com {total_erros} erro(s).")
