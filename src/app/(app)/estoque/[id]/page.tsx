@@ -123,6 +123,24 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
                 defaultChecked={Boolean(iphone.checklist?.[item.key])}
               />
             ))}
+
+            <div className="rounded-2xl border border-[var(--nb-separator)] bg-[var(--nb-surface-2)] px-4 py-3">
+              <label
+                htmlFor="observacao_checklist"
+                className="block text-[11.5px] font-semibold uppercase tracking-wider text-[var(--nb-ink-tertiary)]"
+              >
+                Observação
+              </label>
+              <textarea
+                id="observacao_checklist"
+                name="observacao_checklist"
+                rows={3}
+                defaultValue={iphone.observacao_checklist ?? undefined}
+                placeholder="Algo que reparou na avaliação e não está na lista acima…"
+                className="mt-1 w-full resize-y bg-transparent text-[15px] text-[var(--nb-ink)] placeholder:text-[var(--nb-ink-tertiary)] focus:outline-none"
+              />
+            </div>
+
             <NBButton type="submit" variant="tinted" pendingLabel="Salvando…" className="mt-2">
               Salvar checklist
             </NBButton>

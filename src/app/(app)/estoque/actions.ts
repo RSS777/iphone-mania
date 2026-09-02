@@ -109,9 +109,10 @@ export async function updateChecklist(id: string, formData: FormData) {
   for (const item of CHECKLIST_ITENS) {
     checklist[item.key] = formData.get(item.key) === "on";
   }
+  const observacao_checklist = String(formData.get("observacao_checklist") ?? "").trim() || null;
 
   const supabase = await createClient();
-  await supabase.from("iphones").update({ checklist }).eq("id", id);
+  await supabase.from("iphones").update({ checklist, observacao_checklist }).eq("id", id);
   revalidatePath(`/estoque/${id}`);
 }
 

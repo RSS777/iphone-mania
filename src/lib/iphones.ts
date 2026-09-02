@@ -134,6 +134,7 @@ export type Iphone = {
   data_venda: string | null;
   canal_venda: string | null;
   checklist: Record<string, boolean>;
+  observacao_checklist: string | null;
   socio_responsavel_id: string;
   created_at: string;
   updated_at: string;
