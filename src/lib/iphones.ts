@@ -238,7 +238,7 @@ export function gerarAnuncio(
   }
 
   const linhas = [
-    `Vendo esse ${modeloComPrefixo} ${iphone.capacidade_gb}GB na cor ${cor}, seminovo e em ótimo estado.`,
+    `${modeloComPrefixo} ${iphone.capacidade_gb}GB na cor ${cor}, seminovo e em ótimo estado.`,
   ];
   if (paragrafos.length > 0) {
     linhas.push("", ...paragrafos);
