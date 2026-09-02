@@ -1,5 +1,7 @@
 import os
+import random
 import sys
+import time
 from datetime import datetime, timezone
 
 from supabase import create_client
@@ -50,7 +52,17 @@ def main():
 
     total_erros = 0
 
-    for config in configs:
+    for indice, config in enumerate(configs):
+        # Com várias configs ativas, disparar tudo em sequência rápida contra
+        # o Cloudflare do OLX vindo do mesmo IP levanta suspeita — foi o que
+        # aconteceu: maioria "0 anúncios" e a última com 404. Espaça as
+        # requisições (com jitter, não um intervalo fixo/previsível) pra
+        # parecer navegação normal, não scraping em rajada.
+        if indice > 0:
+            pausa = random.uniform(8, 18)
+            print(f"— pausa de {pausa:.1f}s antes da próxima busca —")
+            time.sleep(pausa)
+
         # Começa com os erros que já tinha (de fontes que não vão rodar
         # nessa rodada, tipo o Facebook fora do horário dele) — só é
         # sobrescrito/limpo pra fonte que de fato roda agora.
