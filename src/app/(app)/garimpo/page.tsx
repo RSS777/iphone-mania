@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AnunciosList } from "./anuncios-list";
-import { sessaoFacebookExpirou, type ScrapingAnuncio, type ScrapingConfig } from "@/lib/garimpo";
+import type { ScrapingAnuncio, ScrapingConfig } from "@/lib/garimpo";
 
 export default async function GarimpoPage() {
   const supabase = await createClient();
@@ -42,19 +42,7 @@ export default async function GarimpoPage() {
                 color: "var(--nb-danger)",
               }}
             >
-              {sessaoFacebookExpirou(config) ? (
-                <>
-                  <strong>{config.nome}</strong> parou — a sessão do Facebook expirou. Rode{" "}
-                  <code className="[font-variant-numeric:tabular-nums]">
-                    bash scraper/scripts/setup-facebook-cookies.sh
-                  </code>{" "}
-                  de novo pra reconectar.
-                </>
-              ) : (
-                <>
-                  <strong>{config.nome}</strong> parou de funcionar: {config.ultimo_erro}
-                </>
-              )}
+              <strong>{config.nome}</strong> parou de funcionar: {config.ultimo_erro}
             </div>
           ))}
 

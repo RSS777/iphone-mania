@@ -19,12 +19,6 @@ export type ScrapingConfig = {
   ultimo_erro_em: string | null;
 };
 
-/** O texto exato levantado em scraper/buscar_facebook.py quando a sessão expira. */
-export function sessaoFacebookExpirou(config: Pick<ScrapingConfig, "ultimo_erro">) {
-  const erro = config.ultimo_erro?.toLowerCase() ?? "";
-  return erro.includes("facebook") && erro.includes("sessão");
-}
-
 export type ScrapingAnuncioStatus = "novo" | "visto" | "descartado" | "avaliado";
 
 export type ScrapingAnuncio = {

@@ -16,7 +16,7 @@ export function ConfigForm() {
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">
       <NBTextRow id="nome" name="nome" label="Nome da busca" placeholder="ex: iPhone 13 barato" required />
-      <p className="px-1 text-[12.5px] text-[var(--nb-ink-tertiary)]">Busca no OLX e no Facebook Marketplace ao mesmo tempo.</p>
+      <p className="px-1 text-[12.5px] text-[var(--nb-ink-tertiary)]">Busca no OLX.</p>
 
       <NBTextRow
         id="termos_busca"

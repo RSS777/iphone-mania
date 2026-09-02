@@ -6,17 +6,12 @@ from datetime import datetime, timezone
 
 from supabase import create_client
 from buscar_olx import buscar_olx
-from buscar_facebook import buscar_facebook_marketplace
 
-# O Facebook derruba a sessão com frequência quando ela é usada de IPs
-# trocando toda hora (o GitHub Actions troca de IP a cada execução) — padrão
-# que parece sequestro de sessão aos olhos do Facebook. Rodar com menos
-# frequência reduz o risco. Controlado pelo workflow via INCLUIR_FACEBOOK.
-INCLUIR_FACEBOOK = os.environ.get("INCLUIR_FACEBOOK", "true").strip().lower() == "true"
-
+# Facebook Marketplace removido do pipeline — a sessão derrubava com muita
+# frequência (o GitHub Actions troca de IP a cada execução, padrão que o
+# Facebook trata como sequestro de sessão) e virou fonte constante de erro.
+# Só OLX por enquanto.
 BUSCADORES = {"olx": buscar_olx}
-if INCLUIR_FACEBOOK:
-    BUSCADORES["facebook"] = buscar_facebook_marketplace
 
 
 def _erros_por_fonte(texto_erro: str | None) -> dict[str, str]:
@@ -37,9 +32,6 @@ def main():
     if not url or not service_key:
         print("Faltam SUPABASE_URL e/ou SUPABASE_SERVICE_KEY no ambiente.")
         sys.exit(1)
-
-    if not INCLUIR_FACEBOOK:
-        print("Rodada sem Facebook (só roda a cada 3h, pra reduzir risco de derrubar a sessão).")
 
     supabase = create_client(url, service_key)
 
@@ -63,9 +55,6 @@ def main():
             print(f"— pausa de {pausa:.1f}s antes da próxima busca —")
             time.sleep(pausa)
 
-        # Começa com os erros que já tinha (de fontes que não vão rodar
-        # nessa rodada, tipo o Facebook fora do horário dele) — só é
-        # sobrescrito/limpo pra fonte que de fato roda agora.
         erros_atuais = _erros_por_fonte(config.get("ultimo_erro"))
 
         for fonte, buscar in BUSCADORES.items():
