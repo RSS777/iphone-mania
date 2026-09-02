@@ -161,3 +161,74 @@ export type IphoneFoto = {
 export function fotoUrl(path: string) {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/iphone-fotos/${path}`;
 }
+
+/**
+ * Frase de anúncio pra cada item do checklist que passou — nunca o IMEI em
+ * si (só a confiança de já ter sido verificado), nunca dado interno
+ * (origem da compra, valor pago, observações do sócio).
+ */
+const FRASE_CHECKLIST: Partial<Record<string, string>> = {
+  imei_verificado: "IMEI verificado e sem restrição",
+  bateria_80: "Bateria com saúde acima de 80%",
+  tela_sem_riscos: "Tela sem riscos nem queimadura",
+  cameras_ok: "Câmeras (traseira e frontal) testadas e perfeitas",
+  face_touch_id_ok: "Face ID/Touch ID 100% funcional",
+  conectividade_ok: "Wi-Fi, Bluetooth, sinal e GPS testados e ok",
+  sensores_botoes_ok: "Todos os sensores e botões testados",
+  sem_reparo_nao_autorizado: "Sem histórico de reparo não autorizado",
+  carcaca_nao_estufada: "Carcaça em perfeito estado, sem estufamento",
+  nota_fiscal_disponivel: "Acompanha nota fiscal",
+  apple_id_removido: "Pronto pra uso — Apple ID já removido",
+  audio_ok: "Microfone e alto-falante perfeitos",
+  som_volume_alto_ok: "Som limpo mesmo no volume máximo",
+  vibracao_ok: "Vibração firme e uniforme",
+  porta_carga_ok: "Porta de carga 100% funcional",
+  multitouch_ok: "Tela sensível ao toque, sem pontos mortos",
+  sensor_proximidade_ok: "Sensor de proximidade ok",
+  sensor_luz_ok: "Sensor de luz/brilho automático ok",
+  atualizacao_ativacao_ok: "Aceita a atualização mais recente do iOS, sem bloqueio de ativação",
+};
+
+export type AnuncioGerado = { titulo: string; descricao: string };
+
+/**
+ * Gera título e descrição pra postar no OLX/Facebook Marketplace, a partir
+ * só dos dados já informados no cadastro e no checklist — nunca usa IMEI,
+ * valor de compra, origem da compra ou observações internas (dado sensível
+ * ou que não é assunto do comprador).
+ */
+export function gerarAnuncio(
+  iphone: Pick<Iphone, "modelo" | "capacidade_gb" | "cor" | "checklist">,
+): AnuncioGerado {
+  const modeloLimpo = iphone.modelo.trim();
+  const modeloComPrefixo = /^iphone\b/i.test(modeloLimpo) ? modeloLimpo : `iPhone ${modeloLimpo}`;
+  const cor = iphone.cor.trim();
+
+  const itensOk = CHECKLIST_ITENS.filter((item) => Boolean(iphone.checklist?.[item.key]));
+  const bateriaOk = itensOk.some((item) => item.key === "bateria_80");
+
+  // Título: modelo + capacidade + cor primeiro (é o que todo mundo digita na
+  // busca), depois os selos que mais convertem clique (bateria, estado).
+  const partesTitulo = [modeloComPrefixo, `${iphone.capacidade_gb}GB`, cor, "Seminovo"];
+  if (bateriaOk) partesTitulo.push("Bateria 80%+");
+  const titulo = partesTitulo.join(" ");
+
+  const frases = itensOk
+    .map((item) => FRASE_CHECKLIST[item.key])
+    .filter((frase): frase is string => Boolean(frase));
+
+  const linhas = [
+    `${modeloComPrefixo} ${iphone.capacidade_gb}GB na cor ${cor}, seminovo e em ótimo estado — testado item por item antes de anunciar.`,
+    "",
+  ];
+  if (frases.length > 0) {
+    linhas.push(...frases.map((f) => `✅ ${f}`));
+    linhas.push("");
+  }
+  linhas.push(
+    `Aparelho ${modeloComPrefixo} ${iphone.capacidade_gb}GB ${cor} original, sem detalhes que não estejam descritos aqui.`,
+    "Chama no chat pra combinar e ver mais fotos!",
+  );
+
+  return { titulo, descricao: linhas.join("\n") };
+}

@@ -9,7 +9,8 @@ import { FotoUploader } from "./foto-uploader";
 import { AdvanceStatus } from "./advance-status";
 import { VendaForm } from "./venda-form";
 import { ChecklistItem } from "./checklist-item";
-import { CHECKLIST_ITENS, fotoUrl, type Iphone, type CustoAdicional, type IphoneFoto } from "@/lib/iphones";
+import { AnuncioGeradoView } from "./anuncio-gerado";
+import { CHECKLIST_ITENS, fotoUrl, gerarAnuncio, type Iphone, type CustoAdicional, type IphoneFoto } from "@/lib/iphones";
 import { NBButton } from "@/components/nb/button";
 
 type EditIphonePageProps = {
@@ -45,6 +46,7 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
     iphone.status === "vendido" && iphone.valor_venda != null
       ? Number(iphone.valor_venda) - (Number(iphone.valor_compra ?? 0) + totalCustos)
       : null;
+  const anuncio = gerarAnuncio(iphone);
 
   return (
     <div style={{ "--tint": "var(--nb-estoque)" } as React.CSSProperties} className="font-nb">
@@ -145,6 +147,16 @@ export default async function EditIphonePage({ params }: EditIphonePageProps) {
               Salvar checklist
             </NBButton>
           </form>
+        </section>
+
+        {/* Anúncio gerado (OLX/Facebook) */}
+        <section className="rounded-2xl border border-[var(--nb-separator)] bg-[var(--nb-surface)] p-4">
+          <h2 className="text-[13px] font-bold uppercase tracking-wider text-[var(--nb-ink-tertiary)]">
+            Anúncio pra postar
+          </h2>
+          <div className="mt-3">
+            <AnuncioGeradoView titulo={anuncio.titulo} descricao={anuncio.descricao} />
+          </div>
         </section>
 
         {/* Custos adicionais */}
