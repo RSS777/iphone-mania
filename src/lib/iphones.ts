@@ -9,56 +9,77 @@ export const ORIGENS_COMPRA = [
 export const CAPACIDADES_GB = [64, 128, 256, 512, 1024] as const;
 
 export const CHECKLIST_ITENS = [
+  // 1. Visual — sem mexer em nada, só olhar o aparelho.
   {
-    key: "imei_verificado",
-    label: "IMEI verificado",
-    como: 'No iPhone: Ajustes > Geral > Sobre, role até "IMEI" e anote o número (ou disque *#06# no teclado). Depois abra o app Celular Seguro (Gov.br), faça login com Gov.br, cadastre/consulte o aparelho pelo IMEI e confira se consta como roubado, furtado ou bloqueado.',
-  },
-  {
-    key: "bateria_80",
-    label: "Bateria ≥ 80%",
-    como: 'Ajustes > Bateria > Saúde e Carregamento da Bateria. Veja "Capacidade Máxima" — deve estar 80% ou mais. Também confira se aparece algum aviso de "Serviço de Bateria Recomendado".',
+    key: "carcaca_nao_estufada",
+    label: "Carcaça não estufada",
+    como: "Coloque o aparelho numa superfície plana e reta para ver se ele balança (indício de bateria estufada).",
   },
   {
     key: "tela_sem_riscos",
     label: "Tela sem riscos/queimadura",
     como: "Com a tela limpa, incline o aparelho sob luz para ver riscos/microrrisco. Para queimadura (burn-in): abra uma foto ou app com fundo branco/cinza sólido (ex: app Notas em tela cheia) e observe manchas ou sombras persistentes, especialmente perto da barra de status.",
   },
+  // 2. Ajustes > Geral > Sobre — IMEI e histórico de peças/reparo, mesma tela.
   {
-    key: "cameras_ok",
-    label: "Câmeras ok",
-    como: "Abra o app Câmera: tire fotos com a câmera traseira (todas as lentes, se houver) e frontal, grave um vídeo curto, teste o foco automático (toque na tela) e o flash. Verifique se a imagem está nítida, sem manchas ou sombras no visor.",
-  },
-  {
-    key: "face_touch_id_ok",
-    label: "Face ID/Touch ID ok",
-    como: "Ajustes > Face ID e Código (ou Touch ID e Código). Confirme que já existe um rosto/digital cadastrada e teste bloqueando e desbloqueando o aparelho para ver se reconhece rápido e sem falhas.",
-  },
-  {
-    key: "conectividade_ok",
-    label: "Conectividade ok",
-    como: "Teste Wi-Fi (Ajustes > Wi-Fi, conecte a uma rede), Bluetooth (Ajustes > Bluetooth, pareie com um fone/dispositivo), sinal de celular (faça uma ligação ou veja as barras de sinal) e GPS (abra o app Mapas e veja se localiza sua posição rapidamente).",
-  },
-  {
-    key: "sensores_botoes_ok",
-    label: "Sensores/botões ok",
-    como: "Teste os botões de volume, a chave de silencioso/mudo e o botão liga/desliga. Gire o aparelho para checar o giroscópio/acelerômetro (a tela deve girar). Para o sensor True Tone, vá em Ajustes > Tela e Brilho e veja se a opção True Tone está disponível e funcionando.",
+    key: "imei_verificado",
+    label: "IMEI verificado",
+    como: 'No iPhone: Ajustes > Geral > Sobre, role até "IMEI" e anote o número (ou disque *#06# no teclado). Depois abra o app Celular Seguro (Gov.br), faça login com Gov.br, cadastre/consulte o aparelho pelo IMEI e confira se consta como roubado, furtado ou bloqueado.',
   },
   {
     key: "sem_reparo_nao_autorizado",
     label: "Sem sinal de reparo não autorizado",
     como: 'Em Ajustes > Geral > Sobre, role até "Histórico de Peças e Serviço" para ver se aparece peça não original/reparo não autorizado.',
   },
+  // 3. Ajustes > Geral > Atualização de Software.
   {
-    key: "carcaca_nao_estufada",
-    label: "Carcaça não estufada",
-    como: "Coloque o aparelho numa superfície plana e reta para ver se ele balança (indício de bateria estufada).",
+    key: "atualizacao_ativacao_ok",
+    label: "Atualização e bloqueio de ativação",
+    como: "Vá em Ajustes > Geral > Atualização de Software e veja se ele aceita a versão mais recente do iOS (sinal de que não está preso a operadora/versão antiga). Peça ao vendedor pra confirmar que sabe a senha do Apple ID, caso precise reativar o aparelho depois de um reset.",
   },
-  { key: "nota_fiscal_disponivel", label: "Nota fiscal disponível" },
+  // 4. Ajustes > Bateria + Tela e Brilho.
+  {
+    key: "bateria_80",
+    label: "Bateria ≥ 80%",
+    como: 'Ajustes > Bateria > Saúde e Carregamento da Bateria. Veja "Capacidade Máxima" — deve estar 80% ou mais. Também confira se aparece algum aviso de "Serviço de Bateria Recomendado".',
+  },
+  {
+    key: "sensor_luz_ok",
+    label: "Sensor de luz (brilho automático)",
+    como: "Vá em Ajustes > Tela e Brilho, ative o Brilho Automático, tampe a câmera frontal com o dedo e veja se a tela escurece; destampe e veja se clareia de novo.",
+  },
+  // 5. Ajustes > Face ID e Código + Buscar.
+  {
+    key: "face_touch_id_ok",
+    label: "Face ID/Touch ID ok",
+    como: "Ajustes > Face ID e Código (ou Touch ID e Código). Confirme que já existe um rosto/digital cadastrada e teste bloqueando e desbloqueando o aparelho para ver se reconhece rápido e sem falhas.",
+  },
   {
     key: "apple_id_removido",
     label: "Apple ID removido/Find My desativado",
     como: "Confirme em Ajustes que não há Apple ID logado e que Buscar (Find My) está desativado — o ideal é o aparelho estar resetado, na tela inicial de configuração.",
+  },
+  // 6. Ligação de teste — sinal + proximidade juntos, depois Wi-Fi/Bluetooth/GPS.
+  {
+    key: "sensor_proximidade_ok",
+    label: "Sensor de proximidade",
+    como: "Faça uma ligação (mesmo que caia) e encoste o rosto/orelha no aparelho perto do alto-falante de cima. A tela deve apagar sozinha e voltar ao afastar.",
+  },
+  {
+    key: "conectividade_ok",
+    label: "Conectividade ok",
+    como: "Teste Wi-Fi (Ajustes > Wi-Fi, conecte a uma rede), Bluetooth (Ajustes > Bluetooth, pareie com um fone/dispositivo), sinal de celular (faça uma ligação ou veja as barras de sinal) e GPS (abra o app Mapas e veja se localiza sua posição rapidamente).",
+  },
+  // 7. Apps em sequência: Câmera → Notas (multitouch) → Gravador de Voz → Música.
+  {
+    key: "cameras_ok",
+    label: "Câmeras ok",
+    como: "Abra o app Câmera: tire fotos com a câmera traseira (todas as lentes, se houver) e frontal, grave um vídeo curto, teste o foco automático (toque na tela) e o flash. Verifique se a imagem está nítida, sem manchas ou sombras no visor.",
+  },
+  {
+    key: "multitouch_ok",
+    label: "Toque na tela (multitouch)",
+    como: 'Abra o app Notas, toque em desenhar (rascunho) e passe o dedo por toda a tela, incluindo os cantos e as bordas, procurando algum ponto onde o traço "falha" ou não responde.',
   },
   {
     key: "audio_ok",
@@ -70,6 +91,7 @@ export const CHECKLIST_ITENS = [
     label: "Som em volume alto",
     como: 'Abra o app Música (ou um vídeo qualquer) e toque algo no volume máximo. Preste atenção se range, distorce ou soa "rachado" — indício de membrana do alto-falante danificada.',
   },
+  // 8. Físico: mudo+Timer, cabo, botões/giroscópio, nota fiscal por último.
   {
     key: "vibracao_ok",
     label: "Vibração",
@@ -81,25 +103,11 @@ export const CHECKLIST_ITENS = [
     como: 'Conecte o cabo de carregar (de preferência o do próprio vendedor) e veja se o ícone de bateria muda para "carregando" rápido e sem precisar ficar mexendo no cabo pra pegar contato.',
   },
   {
-    key: "multitouch_ok",
-    label: "Toque na tela (multitouch)",
-    como: 'Abra o app Notas, toque em desenhar (rascunho) e passe o dedo por toda a tela, incluindo os cantos e as bordas, procurando algum ponto onde o traço "falha" ou não responde.',
+    key: "sensores_botoes_ok",
+    label: "Sensores/botões ok",
+    como: "Teste os botões de volume, a chave de silencioso/mudo e o botão liga/desliga. Gire o aparelho para checar o giroscópio/acelerômetro (a tela deve girar). Para o sensor True Tone, vá em Ajustes > Tela e Brilho e veja se a opção True Tone está disponível e funcionando.",
   },
-  {
-    key: "sensor_proximidade_ok",
-    label: "Sensor de proximidade",
-    como: "Faça uma ligação (mesmo que caia) e encoste o rosto/orelha no aparelho perto do alto-falante de cima. A tela deve apagar sozinha e voltar ao afastar.",
-  },
-  {
-    key: "sensor_luz_ok",
-    label: "Sensor de luz (brilho automático)",
-    como: "Vá em Ajustes > Tela e Brilho, ative o Brilho Automático, tampe a câmera frontal com o dedo e veja se a tela escurece; destampe e veja se clareia de novo.",
-  },
-  {
-    key: "atualizacao_ativacao_ok",
-    label: "Atualização e bloqueio de ativação",
-    como: "Vá em Ajustes > Geral > Atualização de Software e veja se ele aceita a versão mais recente do iOS (sinal de que não está preso a operadora/versão antiga). Peça ao vendedor pra confirmar que sabe a senha do Apple ID, caso precise reativar o aparelho depois de um reset.",
-  },
+  { key: "nota_fiscal_disponivel", label: "Nota fiscal disponível" },
 ] as const;
 
 export const STATUS_SEQUENCIA = ["avaliando", "comprado", "preparacao", "a_venda", "vendido"] as const;
