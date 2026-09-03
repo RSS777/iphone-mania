@@ -171,33 +171,31 @@ export function fotoUrl(path: string) {
 }
 
 /**
- * Fragmento de frase (minúsculo, sem ponto final) pra cada item do
- * checklist que passou — pra encaixar naturalmente numa frase corrida, não
- * virar lista de bullet. Nunca o IMEI em si (só a confiança de já ter sido
- * verificado), nunca dado interno (origem da compra, valor pago, observações
- * do sócio).
+ * Atributo curto (minúsculo, sem verbo/sujeito) pra cada item do checklist
+ * — pensado como característica do aparelho, não como "eu testei isso".
+ * Só os itens que mais pesam na decisão de compra entram no resumo (ver
+ * PRIORIDADE_ANUNCIO); os outros ficam só no checklist interno. Nunca o
+ * IMEI em si (só a confiança de já ter sido verificado), nunca dado interno
+ * (origem da compra, valor pago, observações do sócio).
  */
-const FRASE_CHECKLIST: Partial<Record<string, string>> = {
-  bateria_80: "a bateria está com mais de 80% de saúde",
-  tela_sem_riscos: "a tela não tem risco nem queimadura",
-  carcaca_nao_estufada: "a carcaça está em perfeito estado, sem estufamento",
-  cameras_ok: "as câmeras tiram foto e vídeo perfeitos",
-  audio_ok: "o microfone e o alto-falante estão ótimos",
-  som_volume_alto_ok: "o som fica limpo mesmo no volume máximo",
-  multitouch_ok: "a tela responde bem ao toque em qualquer ponto",
-  face_touch_id_ok: "o Face ID/Touch ID reconhece rápido, sem falhar",
-  vibracao_ok: "a vibração é firme",
-  sensor_proximidade_ok: "o sensor de proximidade funciona certinho",
-  sensor_luz_ok: "o brilho automático ajusta sozinho",
-  sensores_botoes_ok: "todos os botões e sensores foram testados",
-  conectividade_ok: "Wi-Fi, Bluetooth, sinal e GPS funcionam sem problema",
-  porta_carga_ok: "a porta de carga pega o cabo direto, sem precisar ajeitar",
-  imei_verificado: "o IMEI foi consultado e está limpo",
-  sem_reparo_nao_autorizado: "não tem sinal de reparo não autorizado",
-  apple_id_removido: "já sai pronto pra usar, sem Apple ID travando",
-  atualizacao_ativacao_ok: "atualiza pro iOS mais recente sem travar em bloqueio de ativação",
-  nota_fiscal_disponivel: "acompanha nota fiscal",
+const ATRIBUTO_CHECKLIST: Partial<Record<string, string>> = {
+  bateria_80: "bateria acima de 80% de saúde",
+  tela_sem_riscos: "tela sem riscos nem queimadura",
+  cameras_ok: "câmeras perfeitas",
+  carcaca_nao_estufada: "carcaça sem estufamento",
+  imei_verificado: "IMEI verificado e limpo",
+  apple_id_removido: "pronto pra uso, sem Apple ID",
 };
+
+/** Ordem de prioridade pro resumo — só os que mais pesam na decisão de compra. */
+const PRIORIDADE_ANUNCIO = [
+  "bateria_80",
+  "tela_sem_riscos",
+  "cameras_ok",
+  "imei_verificado",
+  "apple_id_removido",
+  "carcaca_nao_estufada",
+] as const;
 
 /** "a, b e c" — encadeamento natural em vez de lista de bullet. */
 function juntarNatural(itens: string[]): string {
@@ -220,8 +218,8 @@ export type AnuncioGerado = { titulo: string; descricao: string };
  * Gera título e descrição pra postar no OLX/Facebook Marketplace, a partir
  * só dos dados já informados no cadastro e no checklist — nunca usa IMEI,
  * valor de compra, origem da compra ou observações internas (dado sensível
- * ou que não é assunto do comprador). Escrito como um vendedor escreveria,
- * não como uma lista de especificações.
+ * ou que não é assunto do comprador). Resumo direto — características do
+ * aparelho, sem primeira pessoa e sem listar tudo que foi checado.
  */
 export function gerarAnuncio(
   iphone: Pick<Iphone, "modelo" | "capacidade_gb" | "cor" | "checklist">,
@@ -230,8 +228,8 @@ export function gerarAnuncio(
   const modeloComPrefixo = /^iphone\b/i.test(modeloLimpo) ? modeloLimpo : `iPhone ${modeloLimpo}`;
   const cor = iphone.cor.trim();
 
-  const itensOk = CHECKLIST_ITENS.filter((item) => Boolean(iphone.checklist?.[item.key]));
-  const bateriaOk = itensOk.some((item) => item.key === "bateria_80");
+  const checklist = iphone.checklist ?? {};
+  const bateriaOk = Boolean(checklist.bateria_80);
 
   // Título: modelo + capacidade + cor primeiro (é o que todo mundo digita na
   // busca), o resto vira uma frase curta e natural, não palavras empilhadas.
@@ -239,31 +237,17 @@ export function gerarAnuncio(
   if (bateriaOk) qualificadores.push("bateria acima de 80%");
   const titulo = `${modeloComPrefixo} ${iphone.capacidade_gb}GB ${cor} – ${qualificadores.join(", ")}`;
 
-  const frases = itensOk
-    .map((item) => FRASE_CHECKLIST[item.key])
-    .filter((frase): frase is string => Boolean(frase));
-
-  // Quebra em frases de até 3 fragmentos, com conectivos variados, pra soar
-  // como alguém contando o que testou — não uma lista de especificações.
-  const conectivos = ["Já testei e", "Também conferi que", "Além disso,"];
-  const paragrafos: string[] = [];
-  for (let i = 0; i < frases.length; i += 3) {
-    const bloco = frases.slice(i, i + 3);
-    const conectivo = conectivos[(i / 3) % conectivos.length];
-    paragrafos.push(`${conectivo} ${juntarNatural(bloco)}.`);
-  }
-
-  const linhas = [
-    `${modeloComPrefixo} ${iphone.capacidade_gb}GB na cor ${cor}, seminovo e em ótimo estado.`,
-  ];
-  if (paragrafos.length > 0) {
-    linhas.push("", ...paragrafos);
-  }
-  linhas.push(
-    "",
-    "Aparelho original, sem nenhum detalhe escondido além do que já está descrito aqui.",
-    "Chama no chat!",
+  const atributos = PRIORIDADE_ANUNCIO.filter((key) => Boolean(checklist[key])).map(
+    (key) => ATRIBUTO_CHECKLIST[key]!,
   );
+
+  const linhas = [`${modeloComPrefixo} ${iphone.capacidade_gb}GB, cor ${cor}, seminovo.`];
+  if (atributos.length > 0) {
+    const [primeiro, ...resto] = atributos;
+    const frase = resto.length > 0 ? `${primeiro}, ${juntarNatural(resto)}` : primeiro;
+    linhas.push(`${frase[0].toUpperCase()}${frase.slice(1)}.`);
+  }
+  linhas.push("", "Chama no chat!");
 
   const hashtags = [
     `#${paraHashtag(modeloComPrefixo)}`,
